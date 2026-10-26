@@ -26,7 +26,7 @@ const PUBLIC_KEY_RE = /^[A-Za-z0-9_-]{43}$/; // 32-byte X25519 key, base64url
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-const INFO = encoder.encode("dahp password-transfer v1");
+const INFO = encoder.encode("dahp postern v1");
 
 const suite = new CipherSuite({
   kem: new DhkemX25519HkdfSha256(),

@@ -32,7 +32,7 @@ async function step(name, fn) {
 await step("phone page is served with a CSP", async () => {
   const res = await fetch(`${server}/`);
   assert.equal(res.status, 200);
-  assert.match(await res.text(), /Send password to laptop/);
+  assert.match(await res.text(), /Send to your laptop/);
   assert.match(res.headers.get("content-security-policy") ?? "", /default-src 'none'/);
 });
 

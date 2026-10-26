@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  "name": "password-transfer",
+  "name": "postern",
   "main": "src/index.js",
   "compatibility_date": "2026-09-01",
   // The phone page, built from ../phone by `npm run build`.

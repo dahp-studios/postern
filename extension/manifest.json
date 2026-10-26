@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Password Transfer",
-  "version": "0.1.1",
-  "description": "Send a password from your phone into this page's field. End-to-end encrypted via a QR code.",
+  "name": "Postern",
+  "version": "0.2.0",
+  "description": "A private gate from your phone to your browser. Send a password or other secret into this page, end-to-end encrypted.",
   "minimum_chrome_version": "116",
   "icons": {
     "16": "icons/icon16.png",
@@ -11,7 +11,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Receive password from phone",
+    "default_title": "Postern: receive from phone",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -24,7 +24,7 @@
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+Shift+P" },
-      "description": "Receive password from phone"
+      "description": "Receive from phone"
     }
   }
 }

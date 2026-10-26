@@ -1,4 +1,6 @@
-# Password Transfer
+# Postern
+
+A private gate from your phone to your browser.
 
 Send a password from your phone into a field in your laptop's browser. The extension
 shows a QR code, the phone scans it, and the password travels end-to-end encrypted.
@@ -54,7 +56,7 @@ npm run test:e2e    # in a second terminal: full transfer through the local rela
 ```
 
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `extension/dist`.
-Open it on a password field by right-clicking the field → **Receive password from phone**, clicking the
+Open it on a password field by right-clicking the field → **Postern: receive from phone**, clicking the
 toolbar icon, or pressing **Alt+Shift+P**.
 
 ### Testing with a real phone
@@ -78,10 +80,10 @@ DNS for the company domain is on Cloudflare, so the Worker can get its own subdo
 touching the existing website records:
 
 1. `cd relay && npx wrangler login && npx wrangler deploy`
-2. Cloudflare dashboard → Workers → `password-transfer` → Settings → Domains → add a custom
-   domain such as `send.<company-domain>`.
-3. `PT_SERVER=https://send.<company-domain> npm run build`, then pack `extension/dist` for the Chrome Web Store.
-4. `PT_SERVER=https://send.<company-domain> npm run test:e2e`
+2. Cloudflare dashboard → Workers → `postern` → Settings → Domains → add a custom
+   domain such as `postern.<company-domain>`.
+3. `PT_SERVER=https://postern.<company-domain> npm run build`, then pack `extension/dist` for the Chrome Web Store.
+4. `PT_SERVER=https://postern.<company-domain> npm run test:e2e`
 
 ## Roadmap
 
