@@ -5,7 +5,7 @@
 // Everything is bundled locally: no CDNs or remote code (required for MV3, and keeps the phone page auditable).
 
 import { build } from "esbuild";
-import { cpSync, mkdirSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,8 +16,9 @@ const common = { bundle: true, format: "esm", minify: false, sourcemap: false, l
 
 // Phone page
 const phoneOut = join(root, "relay/public");
-rmSync(phoneOut, { recursive: true, force: true });
+// Empty the folder rather than deleting it, so a running `wrangler dev` keeps serving from it.
 mkdirSync(phoneOut, { recursive: true });
+for (const f of readdirSync(phoneOut)) rmSync(join(phoneOut, f), { recursive: true, force: true });
 for (const f of ["index.html", "style.css", "favicon.svg", "_headers"]) cpSync(join(root, "phone", f), join(phoneOut, f));
 await build({
   ...common,
@@ -31,10 +32,11 @@ const extOut = join(root, "extension/dist");
 rmSync(extOut, { recursive: true, force: true });
 mkdirSync(extOut, { recursive: true });
 cpSync(join(root, "extension/manifest.json"), join(extOut, "manifest.json"));
+cpSync(join(root, "extension/icons"), join(extOut, "icons"), { recursive: true });
 for (const f of ["popup.html", "popup.css", "options.html"]) cpSync(join(root, "extension/src", f), join(extOut, f));
 await build({
   ...common,
-  entryPoints: [join(root, "extension/src/popup.js"), join(root, "extension/src/options.js")],
+  entryPoints: ["popup.js", "options.js", "background.js"].map((f) => join(root, "extension/src", f)),
   outdir: extOut,
   target: ["chrome116"],
   define: { __DEFAULT_SERVER__: JSON.stringify(server) },

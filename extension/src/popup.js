@@ -46,7 +46,11 @@ function startCountdown(onExpire) {
 
 async function start() {
   cleanup();
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  // Opened as a window from the right-click menu, the target tab comes in the URL.
+  const tabParam = new URLSearchParams(location.search).get("tab");
+  const [tab] = tabParam
+    ? [await chrome.tabs.get(Number(tabParam))]
+    : await chrome.tabs.query({ active: true, currentWindow: true });
 
   let canFill = false;
   try {
