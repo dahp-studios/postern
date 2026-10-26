@@ -3,3 +3,4 @@ extension/dist/
 relay/public/
 relay/.wrangler/
 .DS_Store
+*.log
