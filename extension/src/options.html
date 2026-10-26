@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Password Transfer Settings</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>body { width: auto; max-width: 520px; margin: 24px auto; } input { width: 100%; box-sizing: border-box; padding: 8px; font: inherit; }</style>
+</head>
+<body>
+  <h1>Password Transfer settings</h1>
+  <form id="form">
+    <label for="server">Server URL (phone page and relay)</label>
+    <p><input id="server" type="url" placeholder=""></p>
+    <p class="muted small">Leave blank for the default. The phone must be able to open this URL over HTTPS.
+      For testing with a real phone, use a tunnel URL (see README).</p>
+    <div class="row"><button class="primary" type="submit">Save</button></div>
+    <p id="saved" class="muted" hidden>Saved.</p>
+  </form>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

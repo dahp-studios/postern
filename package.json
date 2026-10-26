@@ -1,0 +1,22 @@
+{
+  "name": "password-transfer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Send a password from your phone to a laptop browser field, end-to-end encrypted via a QR code.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs && cd relay && wrangler dev --ip 0.0.0.0 --port 8787",
+    "test": "node --test test/protocol.test.mjs",
+    "test:e2e": "node test/e2e.mjs"
+  },
+  "dependencies": {
+    "@hpke/core": "1.9.0",
+    "@hpke/dhkem-x25519": "1.8.0",
+    "qrcode-generator": "2.0.4"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "wrangler": "4.148.0"
+  }
+}
