@@ -1,11 +1,11 @@
 import qrcode from "qrcode-generator";
-import { buildLink, createReceiver, SESSION_TTL_MS } from "../../shared/protocol.js";
+import { buildLink, createReceiver, fileAsText, isSafeUrl, SESSION_TTL_MS } from "../../shared/protocol.js";
 import { getServer } from "./settings.js";
 import { fillFocused, hasFillableFocus, runInFrames } from "./fill.js";
 
 const $ = (id) => document.getElementById(id);
 
-let password = null; // held only until filled or discarded
+let received = null; // the decrypted item, held only until used or discarded
 let socket = null;
 let timer = null;
 
@@ -23,7 +23,7 @@ function cleanup() {
   clearInterval(timer);
   socket?.close();
   socket = null;
-  password = null;
+  received = null;
 }
 
 function renderQr(text) {
@@ -44,23 +44,118 @@ function startCountdown(onExpire) {
   timer = setInterval(tick, 1000);
 }
 
-async function start() {
-  cleanup();
+function formatSize(bytes) {
+  return bytes < 1024 ? `${bytes} bytes` : `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0)} KB`;
+}
+
+async function getTargetTab() {
   // Opened as a window from the right-click menu, the target tab comes in the URL.
   const tabParam = new URLSearchParams(location.search).get("tab");
-  const [tab] = tabParam
-    ? [await chrome.tabs.get(Number(tabParam))]
-    : await chrome.tabs.query({ active: true, currentWindow: true });
+  if (tabParam) return chrome.tabs.get(Number(tabParam));
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tab;
+}
+
+/** Build the action buttons for what arrived. Everything from the phone is shown with textContent only. */
+function renderReceived(item, code, { tab, canFill }) {
+  const actions = [];
+  const done = () => {
+    cleanup();
+    window.close();
+  };
+
+  const fill = (value) => async () => {
+    const ok = await runInFrames(tab.id, fillFocused, [value]).catch(() => false);
+    if (ok) return done();
+    cleanup();
+    showMessage("The field lost focus. Click into it, open Postern, and send again.", { retry: true });
+  };
+
+  const copy = (value) => async (button) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      button.textContent = "Copied";
+      setTimeout(done, 700);
+    } catch {
+      button.textContent = "Copy failed";
+    }
+  };
+
+  let title;
+  let preview = null;
+
+  if (item.type === "password") {
+    title = "Password received";
+    if (canFill) actions.push(["Fill password", fill(item.text), true]);
+    else preview = "No field was selected. Click into the password field, open Postern, and send again.";
+  } else if (item.type === "text") {
+    title = "Text received";
+    preview = item.text;
+    if (canFill) actions.push(["Fill field", fill(item.text), true]);
+    actions.push(["Copy", copy(item.text), !canFill]);
+  } else if (item.type === "url" && isSafeUrl(item.text)) {
+    title = `Link to ${new URL(item.text).hostname}`;
+    preview = item.text;
+    actions.push(["Open in new tab", async () => {
+      await chrome.tabs.create({ url: item.text, openerTabId: tab?.id });
+      done();
+    }, true]);
+    if (canFill) actions.push(["Fill field", fill(item.text), false]);
+    actions.push(["Copy", copy(item.text), false]);
+  } else if (item.type === "file") {
+    title = `File: ${item.name} · ${formatSize(item.bytes.length)}`;
+    const text = fileAsText(item);
+    if (text !== null) preview = text.length > 2000 ? `${text.slice(0, 2000)}…` : text;
+    actions.push(["Save file", (button) => {
+      const url = URL.createObjectURL(new Blob([item.bytes], { type: item.mime }));
+      const a = Object.assign(document.createElement("a"), { href: url, download: item.name });
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      button.textContent = "Saved to Downloads";
+      button.disabled = true;
+    }, true]);
+    if (text !== null && canFill) actions.push(["Fill field", fill(text), false]);
+  } else {
+    title = "Received something Postern can't use";
+  }
+
+  $("received-title").textContent = title;
+  $("preview").textContent = preview ?? "";
+  $("preview").hidden = preview === null;
+  $("code").textContent = code;
+
+  const container = $("actions");
+  container.replaceChildren();
+  for (const [label, handler, primary] of actions) {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.dataset.action = label;
+    if (primary) button.className = "primary";
+    button.addEventListener("click", () => handler(button));
+    container.append(button);
+  }
+  const discard = document.createElement("button");
+  discard.textContent = "Discard";
+  discard.dataset.action = "Discard";
+  discard.addEventListener("click", () => {
+    cleanup();
+    showMessage("Discarded.", { retry: true });
+  });
+  container.append(discard);
+
+  show("received");
+  container.querySelector("button")?.focus();
+}
+
+async function start() {
+  cleanup();
+  const tab = await getTargetTab();
 
   let canFill = false;
   try {
     canFill = await runInFrames(tab.id, hasFillableFocus, []);
   } catch {
-    // chrome:// pages, the Web Store, etc. don't allow scripts
-  }
-  if (!canFill) {
-    showMessage("Click into the password field on the page first, then open this again.");
-    return;
+    // chrome:// pages, the Web Store, etc. don't allow scripts; links and files still work
   }
 
   const server = await getServer();
@@ -68,13 +163,13 @@ async function start() {
   const link = buildLink(server, receiver);
   renderQr(link);
   $("qr").dataset.link = link; // read by the browser test
+  $("no-field").hidden = canFill;
   $("status").textContent = "Connecting…";
   show("waiting");
 
-  const wsUrl = `${server.replace(/^http/, "ws")}/api/s/${receiver.sessionId}`;
-  const ws = new WebSocket(wsUrl);
+  const ws = new WebSocket(`${server.replace(/^http/, "ws")}/api/s/${receiver.sessionId}`);
   socket = ws;
-  let received = false;
+  let gotMessage = false;
 
   ws.addEventListener("open", () => {
     $("status").textContent = "Waiting for phone…";
@@ -85,40 +180,24 @@ async function start() {
   });
 
   ws.addEventListener("message", async (event) => {
-    received = true;
+    gotMessage = true;
     clearInterval(timer);
     try {
-      const result = await receiver.open(JSON.parse(event.data));
-      password = result.password;
-      $("code").textContent = result.code;
-      show("received");
-      $("fill").focus();
+      const { item, code } = await receiver.open(JSON.parse(event.data));
+      received = item;
+      renderReceived(item, code, { tab, canFill });
     } catch {
       showMessage("Received data couldn't be decrypted, so it was discarded.", { retry: true });
     }
   });
 
   ws.addEventListener("close", () => {
-    if (socket !== ws || received) return;
+    if (socket !== ws || gotMessage) return;
     cleanup();
     showMessage(`Lost connection to ${server}.`, { retry: true });
   });
-
-  $("fill").onclick = async () => {
-    const ok = await runInFrames(tab.id, fillFocused, [password]).catch(() => false);
-    cleanup();
-    if (ok) {
-      window.close();
-    } else {
-      showMessage("The password field lost focus. Click into it and try again.", { retry: true });
-    }
-  };
 }
 
-$("cancel").addEventListener("click", () => {
-  cleanup();
-  showMessage("Discarded.", { retry: true });
-});
 $("retry").addEventListener("click", start);
 window.addEventListener("pagehide", cleanup);
 

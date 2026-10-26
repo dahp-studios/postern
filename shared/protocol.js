@@ -6,9 +6,10 @@
 //   AEAD AES-256-GCM
 //
 // The laptop (receiver) puts its public key in the QR link. The phone (sender)
-// seals the password to that key and posts the ciphertext to the relay, which
-// can't read it. Both sides derive a 4-digit confirmation code from the HPKE
-// exporter so the user can check that the laptop got the phone's message.
+// seals one item (password, text, link or file) to that key and posts the
+// ciphertext to the relay, which can't read it. Both sides derive a 4-digit
+// confirmation code from the HPKE exporter so the user can check that the
+// laptop got the phone's message.
 
 import { CipherSuite, Aes256Gcm, HkdfSha256 } from "@hpke/core";
 // Pure-JS X25519, so older phone browsers without WebCrypto X25519 still work.
@@ -16,10 +17,17 @@ import { DhkemX25519HkdfSha256 } from "@hpke/dhkem-x25519";
 
 export const PROTOCOL_VERSION = 1;
 export const SESSION_TTL_MS = 2 * 60 * 1000;
-export const MAX_PASSWORD_LENGTH = 1024;
-// Plaintext is padded to a multiple of this, so ciphertext size hides the exact password length.
-const PAD_BLOCK = 128;
-const MAX_CIPHERTEXT_BYTES = 8192;
+
+export const ITEM_TYPES = ["password", "text", "url", "file"];
+export const LIMITS = {
+  password: 1024, // characters
+  text: 10000, // characters
+  url: 4096, // characters
+  fileBytes: 256 * 1024,
+  fileName: 200, // characters
+};
+// Ciphertext grows with the base64 file data inside it; this leaves headroom over a 256 KB file.
+export const MAX_CIPHERTEXT_BYTES = 512 * 1024;
 
 const SESSION_ID_RE = /^[A-Za-z0-9_-]{22}$/; // 16 random bytes, base64url
 const PUBLIC_KEY_RE = /^[A-Za-z0-9_-]{43}$/; // 32-byte X25519 key, base64url
@@ -35,8 +43,9 @@ const suite = new CipherSuite({
 });
 
 export function toBase64Url(bytes) {
+  const arr = new Uint8Array(bytes);
   let bin = "";
-  for (const b of new Uint8Array(bytes)) bin += String.fromCharCode(b);
+  for (let i = 0; i < arr.length; i += 0x8000) bin += String.fromCharCode(...arr.subarray(i, i + 0x8000));
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
@@ -53,6 +62,60 @@ export function isValidSessionId(id) {
   return typeof id === "string" && SESSION_ID_RE.test(id);
 }
 
+/** True for http(s) links only; anything else (javascript:, data:, file:) is refused on both sides. */
+export function isSafeUrl(text) {
+  try {
+    const { protocol } = new URL(text);
+    return protocol === "https:" || protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+/** Strip path parts and control characters so a file name is safe to save. */
+export function cleanFileName(name) {
+  const base = String(name ?? "").split(/[\\/]/).pop();
+  const cleaned = base.replace(/[\u0000-\u001f\u007f<>:"|?*]/g, "").replace(/^\.+/, "").trim();
+  return cleaned.slice(0, LIMITS.fileName) || "file";
+}
+
+/**
+ * Check an item and return it in canonical form, or throw a message the user can act on.
+ *   { type: "password" | "text" | "url", text }
+ *   { type: "file", name, mime, bytes: Uint8Array }
+ */
+export function validateItem(item) {
+  if (!item || !ITEM_TYPES.includes(item.type)) throw new Error("Unknown item type");
+
+  if (item.type === "file") {
+    if (!(item.bytes instanceof Uint8Array)) throw new Error("Missing file data");
+    if (item.bytes.length === 0) throw new Error("The file is empty");
+    if (item.bytes.length > LIMITS.fileBytes) throw new Error("The file is larger than 256 KB");
+    const mime = typeof item.mime === "string" && /^[\w.+-]+\/[\w.+-]+$/.test(item.mime) ? item.mime : "application/octet-stream";
+    return { type: "file", name: cleanFileName(item.name), mime, bytes: item.bytes };
+  }
+
+  if (typeof item.text !== "string") throw new Error("Missing text");
+  const text = item.type === "password" ? item.text : item.text.trim();
+  const label = { password: "Password", text: "Text", url: "Link" }[item.type];
+  if (text.length === 0) throw new Error(`${label} is empty`);
+  if (text.length > LIMITS[item.type]) throw new Error(`${label} is too long`);
+  if (item.type === "url" && !isSafeUrl(text)) throw new Error("Link must start with https:// or http://");
+  return { type: item.type, text };
+}
+
+/** Text-like files (JSON, plain text, CSV…) can be filled into a field as well as saved. */
+export function fileAsText(item) {
+  if (item.type !== "file") return null;
+  const textual = /^text\/|^application\/(json|xml|x-yaml|yaml|csv)/.test(item.mime) || /\.(json|txt|csv|ya?ml|xml|env|md)$/i.test(item.name);
+  if (!textual) return null;
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(item.bytes);
+  } catch {
+    return null; // not valid UTF-8 after all
+  }
+}
+
 function aadFor(sessionId) {
   return encoder.encode(`v${PROTOCOL_VERSION}:${sessionId}`);
 }
@@ -63,18 +126,26 @@ async function confirmationCode(context) {
   return String(n % 10000).padStart(4, "0");
 }
 
-function encodePlaintext(password) {
-  const json = encoder.encode(JSON.stringify({ p: password }));
-  const padded = new Uint8Array(Math.ceil((json.length + 1) / PAD_BLOCK) * PAD_BLOCK);
+function encodePlaintext(item) {
+  const body =
+    item.type === "file"
+      ? { t: "file", n: item.name, m: item.mime, d: toBase64Url(item.bytes) }
+      : { t: item.type, v: item.text };
+  const json = encoder.encode(JSON.stringify(body));
+  // Pad so ciphertext size hides the exact length: 128-byte steps for short items, 4 KB for large ones.
+  const block = json.length < 1024 ? 128 : 4096;
+  const padded = new Uint8Array(Math.ceil((json.length + 1) / block) * block);
   padded.fill(0x20); // trailing spaces are valid JSON whitespace
   padded.set(json);
   return padded;
 }
 
 function decodePlaintext(bytes) {
-  const { p } = JSON.parse(decoder.decode(bytes));
-  if (typeof p !== "string") throw new Error("Malformed payload");
-  return p;
+  const body = JSON.parse(decoder.decode(bytes));
+  if (body?.t === "file") {
+    return validateItem({ type: "file", name: body.n, mime: body.m, bytes: fromBase64Url(body.d) });
+  }
+  return validateItem({ type: body?.t, text: body?.v });
 }
 
 /** Laptop side: create a one-time key pair and session. */
@@ -98,21 +169,20 @@ export async function createReceiver() {
 
       const recipient = await suite.createRecipientContext({ recipientKey: keyPair, enc, info: INFO });
       const plaintext = await recipient.open(ct, aadFor(sessionId)); // throws if tampered
-      return { password: decodePlaintext(plaintext), code: await confirmationCode(recipient) };
+      return { item: decodePlaintext(plaintext), code: await confirmationCode(recipient) };
     },
   };
 }
 
-/** Phone side: encrypt a password to the laptop's public key. */
-export async function sealPassword({ sessionId, publicKey, password }) {
+/** Phone side: encrypt one item to the laptop's public key. */
+export async function sealItem({ sessionId, publicKey, item }) {
   if (!isValidSessionId(sessionId)) throw new Error("Invalid session");
   if (typeof publicKey !== "string" || !PUBLIC_KEY_RE.test(publicKey)) throw new Error("Invalid key");
-  if (typeof password !== "string" || password.length === 0) throw new Error("Password is empty");
-  if (password.length > MAX_PASSWORD_LENGTH) throw new Error("Password is too long");
+  const clean = validateItem(item);
 
   const recipientPublicKey = await suite.kem.deserializePublicKey(fromBase64Url(publicKey));
   const sender = await suite.createSenderContext({ recipientPublicKey, info: INFO });
-  const ct = await sender.seal(encodePlaintext(password), aadFor(sessionId));
+  const ct = await sender.seal(encodePlaintext(clean), aadFor(sessionId));
   return {
     message: { v: PROTOCOL_VERSION, enc: toBase64Url(sender.enc), ct: toBase64Url(ct) },
     code: await confirmationCode(sender),

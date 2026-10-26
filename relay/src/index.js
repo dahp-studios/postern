@@ -8,7 +8,7 @@
 import { DurableObject } from "cloudflare:workers";
 
 const SESSION_TTL_MS = 2 * 60 * 1000;
-const MAX_BODY_BYTES = 12 * 1024;
+const MAX_BODY_BYTES = 768 * 1024; // a 256 KB file is about 460 KB once encrypted and base64-encoded
 const ROUTE = /^\/api\/s\/([A-Za-z0-9_-]{22})$/;
 
 const NO_STORE = { "Cache-Control": "no-store" };

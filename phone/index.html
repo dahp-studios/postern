@@ -17,16 +17,47 @@
 
     <section id="send" hidden>
       <p class="hint">It's encrypted on this phone. Only the laptop that showed the QR code can read it.</p>
-      <form id="form" autocomplete="on">
-        <!-- Hidden username field helps phone password managers offer autofill. -->
-        <input type="text" name="username" autocomplete="username" class="visually-hidden" tabindex="-1" aria-hidden="true">
-        <label for="password">Password</label>
-        <div class="field">
-          <input id="password" name="password" type="password" autocomplete="current-password"
-                 autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="1024" required>
-          <button type="button" id="toggle" aria-label="Show password">Show</button>
+
+      <div class="types" role="tablist" aria-label="What to send">
+        <button type="button" role="tab" data-type="password" aria-selected="true">Password</button>
+        <button type="button" role="tab" data-type="text" aria-selected="false">Text</button>
+        <button type="button" role="tab" data-type="url" aria-selected="false">Link</button>
+        <button type="button" role="tab" data-type="file" aria-selected="false">File</button>
+      </div>
+
+      <form id="form" autocomplete="on" novalidate>
+        <div class="pane" data-pane="password">
+          <!-- Hidden username field helps phone password managers offer autofill. -->
+          <input type="text" name="username" autocomplete="username" class="visually-hidden" tabindex="-1" aria-hidden="true">
+          <label for="password">Password</label>
+          <div class="field">
+            <input id="password" name="password" type="password" autocomplete="current-password"
+                   autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="1024">
+            <button type="button" id="toggle" aria-label="Show password">Show</button>
+          </div>
+          <p class="hint small">Type, paste, or use the 🔑 on your keyboard to pick a saved password.</p>
         </div>
-        <p class="hint small">Type, paste, or use the 🔑 on your keyboard to pick a saved password.</p>
+
+        <div class="pane" data-pane="text" hidden>
+          <label for="text">Text</label>
+          <textarea id="text" rows="4" maxlength="10000" autocomplete="off" autocapitalize="off" spellcheck="false"
+                    placeholder="A user ID, code, address, note…"></textarea>
+          <p class="hint small">Up to 10,000 characters.</p>
+        </div>
+
+        <div class="pane" data-pane="url" hidden>
+          <label for="url">Link</label>
+          <input id="url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"
+                 maxlength="4096" placeholder="https://">
+          <p class="hint small">The laptop can open it, fill it into a field, or copy it.</p>
+        </div>
+
+        <div class="pane" data-pane="file" hidden>
+          <label for="file">File</label>
+          <input id="file" type="file">
+          <p id="file-info" class="hint small">JSON, text, or any file up to 256 KB.</p>
+        </div>
+
         <button type="submit" id="submit">Send</button>
       </form>
     </section>
@@ -34,7 +65,7 @@
     <section id="done" hidden>
       <p>Sent. Check that your laptop shows this code:</p>
       <p id="code" class="code" aria-live="polite"></p>
-      <p class="hint">If the codes don't match, don't fill it on the laptop.</p>
+      <p class="hint">If the codes don't match, discard it on the laptop.</p>
     </section>
 
     <p id="error" class="error" role="alert" hidden></p>
