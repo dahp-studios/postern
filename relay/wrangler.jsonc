@@ -1,0 +1,13 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "password-transfer",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  // The phone page, built from ../phone by `npm run build`.
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  "durable_objects": {
+    "bindings": [{ "name": "SESSIONS", "class_name": "Session" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Session"] }],
+  "observability": { "enabled": false }
+}

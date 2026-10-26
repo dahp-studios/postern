@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Password Transfer",
+  "version": "0.1.0",
+  "description": "Send a password from your phone into this page's field. End-to-end encrypted via a QR code.",
+  "minimum_chrome_version": "116",
+  "action": {
+    "default_title": "Receive password from phone",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+P" },
+      "description": "Receive password from phone"
+    }
+  }
+}

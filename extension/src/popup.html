@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Password Transfer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Receive password from phone</h1>
+
+  <section id="waiting" hidden>
+    <p>Scan with your phone's camera:</p>
+    <img id="qr" alt="QR code to scan with your phone">
+    <p class="muted"><span id="status">Waiting for phone…</span> <span id="timer"></span></p>
+  </section>
+
+  <section id="received" hidden>
+    <p>Password received. Does your phone show this code?</p>
+    <p id="code" class="code"></p>
+    <div class="row">
+      <button id="fill" class="primary">Yes, fill it</button>
+      <button id="cancel">No, discard</button>
+    </div>
+  </section>
+
+  <section id="message" hidden>
+    <p id="message-text"></p>
+    <button id="retry" hidden>Try again</button>
+  </section>
+
+  <footer><a href="options.html" target="_blank" class="muted small">Settings</a></footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
