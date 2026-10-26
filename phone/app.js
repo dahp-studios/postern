@@ -18,7 +18,7 @@ const session = parseLinkFragment(location.hash);
 history.replaceState(null, "", location.pathname);
 
 if (!session) {
-  showError("Scan the QR code shown by the Password Transfer extension on your laptop.");
+  showError("Scan the QR code shown by Postern on your laptop.");
 } else {
   $("send").hidden = false;
 }
