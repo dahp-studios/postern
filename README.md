@@ -54,7 +54,8 @@ npm run test:e2e    # in a second terminal: full transfer through the local rela
 ```
 
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `extension/dist`.
-Shortcut: **Alt+Shift+P** opens it.
+Open it on a password field by right-clicking the field → **Receive password from phone**, clicking the
+toolbar icon, or pressing **Alt+Shift+P**.
 
 ### Testing with a real phone
 
