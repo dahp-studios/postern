@@ -2,33 +2,67 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   createReceiver,
-  sealPassword,
+  sealItem,
   buildLink,
   parseLinkFragment,
   fromBase64Url,
   toBase64Url,
+  cleanFileName,
+  fileAsText,
+  isSafeUrl,
 } from "../shared/protocol.js";
 
-test("round trip: phone seals, laptop opens, codes match", async () => {
+async function roundTrip(item) {
   const rx = await createReceiver();
-  const password = "c0rrect horse battery staple – ünïcødé 🔐";
-  const { message, code } = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password });
+  const { message, code } = await sealItem({ sessionId: rx.sessionId, publicKey: rx.publicKey, item });
   const opened = await rx.open(message);
-  assert.equal(opened.password, password);
   assert.equal(opened.code, code);
   assert.match(code, /^\d{4}$/);
+  return { ...opened, message };
+}
+
+test("password round trip keeps it exactly, including spaces", async () => {
+  const text = "  c0rrect horse battery staple – ünïcødé 🔐 ";
+  const { item } = await roundTrip({ type: "password", text });
+  assert.deepEqual(item, { type: "password", text });
+});
+
+test("text round trip trims surrounding whitespace", async () => {
+  const { item } = await roundTrip({ type: "text", text: "  user-42@example.com\n" });
+  assert.deepEqual(item, { type: "text", text: "user-42@example.com" });
+});
+
+test("url round trip", async () => {
+  const { item } = await roundTrip({ type: "url", text: "https://example.com/reset?token=abc" });
+  assert.deepEqual(item, { type: "url", text: "https://example.com/reset?token=abc" });
+});
+
+test("file round trip, 256 KB at the limit", async () => {
+  const bytes = new Uint8Array(256 * 1024);
+  for (let i = 0; i < bytes.length; i += 65536) crypto.getRandomValues(bytes.subarray(i, i + 65536));
+  const { item } = await roundTrip({ type: "file", name: "backup.bin", mime: "application/octet-stream", bytes });
+  assert.equal(item.type, "file");
+  assert.equal(item.name, "backup.bin");
+  assert.deepEqual(item.bytes, bytes);
+});
+
+test("JSON file can be read as text", async () => {
+  const json = JSON.stringify({ apiKey: "k-123", nested: { ok: true } });
+  const { item } = await roundTrip({ type: "file", name: "config.json", mime: "application/json", bytes: new TextEncoder().encode(json) });
+  assert.equal(fileAsText(item), json);
+  assert.equal(fileAsText({ type: "file", name: "photo.png", mime: "image/png", bytes: new Uint8Array([1]) }), null);
 });
 
 test("receiver key is single-use", async () => {
   const rx = await createReceiver();
-  const { message } = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password: "x" });
+  const { message } = await sealItem({ ...rx, item: { type: "text", text: "x" } });
   await rx.open(message);
   await assert.rejects(rx.open(message), /already used/);
 });
 
 test("tampered ciphertext is rejected", async () => {
   const rx = await createReceiver();
-  const { message } = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password: "secret" });
+  const { message } = await sealItem({ ...rx, item: { type: "password", text: "secret" } });
   const ct = fromBase64Url(message.ct);
   ct[0] ^= 1;
   await assert.rejects(rx.open({ ...message, ct: toBase64Url(ct) }));
@@ -36,21 +70,21 @@ test("tampered ciphertext is rejected", async () => {
 
 test("message bound to its session id (no cross-session replay)", async () => {
   const rx = await createReceiver();
-  const { message } = await sealPassword({ sessionId: "A".repeat(22), publicKey: rx.publicKey, password: "secret" });
+  const { message } = await sealItem({ sessionId: "A".repeat(22), publicKey: rx.publicKey, item: { type: "text", text: "x" } });
   await assert.rejects(rx.open(message));
 });
 
 test("another laptop's key cannot decrypt", async () => {
   const rx = await createReceiver();
   const eve = await createReceiver();
-  const { message } = await sealPassword({ sessionId: eve.sessionId, publicKey: rx.publicKey, password: "secret" });
+  const { message } = await sealItem({ sessionId: eve.sessionId, publicKey: rx.publicKey, item: { type: "text", text: "x" } });
   await assert.rejects(eve.open(message));
 });
 
 test("injected message from someone else yields a different code", async () => {
   const rx = await createReceiver();
-  const phone = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password: "real" });
-  const attacker = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password: "fake" });
+  const phone = await sealItem({ ...rx, item: { type: "password", text: "real" } });
+  const attacker = await sealItem({ ...rx, item: { type: "password", text: "fake" } });
   // A 1-in-10000 collision is possible; skip rather than flake.
   if (phone.code === attacker.code) return;
   const opened = await rx.open(attacker.message);
@@ -59,23 +93,47 @@ test("injected message from someone else yields a different code", async () => {
 
 test("ciphertext length hides password length within a 128-byte block", async () => {
   const rx = await createReceiver();
-  const a = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password: "a" });
-  const b = await sealPassword({ sessionId: rx.sessionId, publicKey: rx.publicKey, password: "a".repeat(100) });
+  const a = await sealItem({ ...rx, item: { type: "password", text: "a" } });
+  const b = await sealItem({ ...rx, item: { type: "password", text: "a".repeat(80) } });
   assert.equal(a.message.ct.length, b.message.ct.length);
 });
 
-test("input validation", async () => {
+test("validation: limits, empty values, unsafe links", async () => {
   const rx = await createReceiver();
-  const base = { sessionId: rx.sessionId, publicKey: rx.publicKey };
-  await assert.rejects(sealPassword({ ...base, password: "" }), /empty/);
-  await assert.rejects(sealPassword({ ...base, password: "x".repeat(1025) }), /too long/);
-  await assert.rejects(sealPassword({ ...base, sessionId: "bad", password: "x" }), /session/);
-  await assert.rejects(sealPassword({ ...base, publicKey: "bad", password: "x" }), /key/);
+  const seal = (item) => sealItem({ ...rx, item });
+  await assert.rejects(seal({ type: "password", text: "" }), /empty/);
+  await assert.rejects(seal({ type: "password", text: "x".repeat(1025) }), /too long/);
+  await assert.rejects(seal({ type: "text", text: "   " }), /empty/);
+  await assert.rejects(seal({ type: "text", text: "x".repeat(10001) }), /too long/);
+  await assert.rejects(seal({ type: "url", text: "javascript:alert(1)" }), /https/);
+  await assert.rejects(seal({ type: "url", text: "not a url" }), /https/);
+  await assert.rejects(seal({ type: "file", name: "a", bytes: new Uint8Array(256 * 1024 + 1) }), /256 KB/);
+  await assert.rejects(seal({ type: "file", name: "a", bytes: new Uint8Array(0) }), /empty/);
+  await assert.rejects(seal({ type: "exe", text: "x" }), /Unknown/);
+  await assert.rejects(sealItem({ ...rx, sessionId: "bad", item: { type: "text", text: "x" } }), /session/);
+  await assert.rejects(sealItem({ ...rx, publicKey: "bad", item: { type: "text", text: "x" } }), /key/);
+});
+
+test("unsafe file names are cleaned", () => {
+  assert.equal(cleanFileName("../../etc/passwd"), "passwd");
+  assert.equal(cleanFileName("C:\\Users\\me\\.ssh\\id_rsa"), "id_rsa");
+  assert.equal(cleanFileName(".hidden"), "hidden");
+  assert.equal(cleanFileName('a<b>:"c|?*.json'), "abc.json");
+  assert.equal(cleanFileName(""), "file");
+  assert.equal(cleanFileName("x".repeat(300)).length, 200);
+});
+
+test("isSafeUrl", () => {
+  assert.ok(isSafeUrl("https://a.example/"));
+  assert.ok(isSafeUrl("http://localhost:8787/x"));
+  for (const bad of ["javascript:alert(1)", "data:text/html,hi", "file:///etc/passwd", "ftp://x", "example.com"]) {
+    assert.equal(isSafeUrl(bad), false, bad);
+  }
 });
 
 test("link build and parse", async () => {
   const rx = await createReceiver();
-  const link = buildLink("https://pt.example.com/", rx);
+  const link = buildLink("https://postern.example.com/", rx);
   const url = new URL(link);
   assert.equal(url.pathname, "/");
   assert.deepEqual(parseLinkFragment(url.hash), { sessionId: rx.sessionId, publicKey: rx.publicKey });

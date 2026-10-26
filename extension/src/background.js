@@ -1,4 +1,4 @@
-// Adds "Postern: receive from phone" to the right-click menu on text fields.
+// Adds "Postern: receive from phone" to the right-click menu.
 
 const MENU_ID = "receive-password";
 
@@ -7,7 +7,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   chrome.contextMenus.create({
     id: MENU_ID,
     title: "Postern: receive from phone",
-    contexts: ["editable"],
+    contexts: ["editable", "page"], // on a field to fill it, anywhere for links and files
   });
 });
 

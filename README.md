@@ -2,21 +2,24 @@
 
 A private gate from your phone to your browser.
 
-Send a password from your phone into a field in your laptop's browser. The extension
-shows a QR code, the phone scans it, and the password travels end-to-end encrypted.
-Nothing to install on the phone, no accounts, no clipboard.
+Send a **password**, **text** (user IDs, codes), a **link**, or a **file** (JSON or anything up to 256 KB)
+from your phone to Chrome on your laptop. On the laptop you can fill it into the focused field, open the
+link, copy it, or save the file.
+
+The extension shows a QR code, the phone scans it, and the item travels end-to-end encrypted.
+Nothing to install on the phone, no accounts.
 
 ```
 LAPTOP (Chrome extension)                       PHONE (web page, no install)
-1. Click into a password field, open the extension
+1. Click into a field (optional), open the extension
 2. New one-time X25519 key pair
    QR: https://<server>/#v=1&id=<session>&k=<public key>
-                    ───── QR (scanned by phone camera) ─────▶ 3. Page opens; type/paste/autofill
+                    ───── QR (scanned by phone camera) ─────▶ 3. Page opens; pick Password/Text/Link/File
                                                               4. HPKE-encrypt to the laptop's key
             ◀──── WebSocket ──── RELAY ◀──── POST ciphertext ─┘
                      (one-time mailbox, ciphertext only, 2 min TTL)
 5. Decrypt, show 4-digit code; user checks it matches the phone
-6. Fill the field
+6. Fill the field, open the link, copy, or save the file
 ```
 
 ## Layout
@@ -39,9 +42,13 @@ LAPTOP (Chrome extension)                       PHONE (web page, no install)
 - **The key travels in the URL fragment** (`#…`), which browsers never send to servers. The phone page then removes it from the address bar.
 - **Ciphertext is bound to the session ID** (AEAD associated data), so a message can't be replayed into another session.
 - **Confirmation code** from the HPKE exporter: if someone who photographed the QR injects their own message, the laptop's code won't match the phone's, and the user discards it.
-- **Padding** to 128-byte blocks hides the password length.
+- **Padding** (128-byte steps for short items, 4 KB for large ones) hides the exact length.
 - **Phone page CSP** allows only same-origin scripts and connections; no third-party code or analytics.
-- **No clipboard.** The extension writes straight into the focused field.
+- **Passwords never touch the clipboard.** They go straight into the focused field. Copy is offered
+  only for text and links.
+- **Links are limited to http(s)** on both sides, so a `javascript:` or `file:` link can't be opened.
+- **File names are cleaned** of path parts and unsafe characters before saving.
+- **Limits:** password 1,024 characters, text 10,000, link 4,096, file 256 KB.
 
 Trust note: the phone page's code is downloaded from the server each time (same model as any
 web app). A future native app or pinned PWA removes that.
@@ -92,3 +99,4 @@ touching the existing website records:
 - Installable PWA
 - Keep the session alive if the popup loses focus (in-page overlay or small window)
 - Relay rate limiting; Firefox/Edge builds
+- Larger files (chunked transfer)

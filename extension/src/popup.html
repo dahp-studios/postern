@@ -12,15 +12,15 @@
     <p>Scan with your phone's camera:</p>
     <img id="qr" alt="QR code to scan with your phone">
     <p class="muted"><span id="status">Waiting for phone…</span> <span id="timer"></span></p>
+    <p id="no-field" class="muted small" hidden>No text field is selected. Links and files still work. To fill a password or text, click into the field first, then open Postern.</p>
   </section>
 
   <section id="received" hidden>
-    <p>Password received. Does your phone show this code?</p>
+    <p id="received-title" class="title"></p>
+    <div id="preview" class="preview" hidden></div>
+    <p class="muted small">Does your phone show this code? Only continue if it matches.</p>
     <p id="code" class="code"></p>
-    <div class="row">
-      <button id="fill" class="primary">Yes, fill it</button>
-      <button id="cancel">No, discard</button>
-    </div>
+    <div id="actions" class="actions"></div>
   </section>
 
   <section id="message" hidden>
