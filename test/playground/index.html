@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Postern Playground</title>
+  <link rel="stylesheet" href="playground.css">
+</head>
+<body>
+  <header>
+    <h1>Postern playground</h1>
+    <p>Click into a field, then open Postern (right-click → <b>Postern: receive from phone</b>, the toolbar icon, or <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and send from your phone. Each card shows what arrived and whether the page saw the <code>input</code> and <code>change</code> events that sites like React depend on.</p>
+    <button type="button" id="reset">Clear everything</button>
+  </header>
+
+  <main>
+    <section>
+      <h2>Should fill</h2>
+      <p class="hint">Postern should fill each of these. Send a <b>password</b>, <b>text</b> or <b>link</b>, or a text file (JSON, .txt, .csv) and choose <b>Fill field</b>.</p>
+      <div class="grid">
+        <label class="card" data-expect="fill">
+          <span class="name">Password <code>type="password"</code></span>
+          <input type="password" autocomplete="new-password">
+        </label>
+        <label class="card" data-expect="fill">
+          <span class="name">Username <code>type="text"</code></span>
+          <input type="text" autocomplete="off">
+        </label>
+        <label class="card" data-expect="fill">
+          <span class="name">Email <code>type="email"</code></span>
+          <input type="email" autocomplete="off">
+        </label>
+        <label class="card" data-expect="fill">
+          <span class="name">Phone <code>type="tel"</code></span>
+          <input type="tel" autocomplete="off">
+        </label>
+        <label class="card" data-expect="fill">
+          <span class="name">Link <code>type="url"</code></span>
+          <input type="url" autocomplete="off">
+        </label>
+        <label class="card" data-expect="fill">
+          <span class="name">Search <code>type="search"</code></span>
+          <input type="search" autocomplete="off">
+        </label>
+        <label class="card" data-expect="fill">
+          <span class="name">No type attribute</span>
+          <input autocomplete="off">
+        </label>
+        <label class="card wide" data-expect="fill">
+          <span class="name">Text area (long text, JSON files)</span>
+          <textarea rows="6" spellcheck="false"></textarea>
+        </label>
+        <div class="card wide" data-expect="fill">
+          <span class="name">Password inside an iframe</span>
+          <iframe src="frame.html" title="Iframe with a password field"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Should be refused</h2>
+      <p class="hint">Postern should not fill these. The popup should say no field is selected, and a password should not be offered for filling.</p>
+      <div class="grid">
+        <label class="card" data-expect="refuse">
+          <span class="name">Number <code>type="number"</code></span>
+          <input type="number">
+        </label>
+        <label class="card" data-expect="refuse">
+          <span class="name">Date <code>type="date"</code></span>
+          <input type="date">
+        </label>
+        <label class="card" data-expect="refuse">
+          <span class="name">Read-only text</span>
+          <input type="text" readonly value="read-only">
+        </label>
+        <label class="card" data-expect="refuse">
+          <span class="name">Disabled text</span>
+          <input type="text" disabled value="disabled">
+        </label>
+        <div class="card" data-expect="refuse">
+          <span class="name">Editable box <code>contenteditable</code></span>
+          <div class="editable" contenteditable="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Check a saved file</h2>
+      <p class="hint">Send a file from your phone and choose <b>Save file</b>. Then pick it from Downloads here to check its name, size and SHA-256 fingerprint against the original.</p>
+      <div class="card wide">
+        <span class="name">Downloaded file</span>
+        <input type="file" id="check-file">
+        <dl id="file-report" hidden>
+          <dt>Name</dt><dd id="f-name"></dd>
+          <dt>Size</dt><dd id="f-size"></dd>
+          <dt>Type</dt><dd id="f-type"></dd>
+          <dt>SHA-256</dt><dd id="f-hash" class="mono"></dd>
+        </dl>
+        <pre id="f-preview" hidden></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>Opened links</h2>
+      <p class="hint">Send a link and choose <b>Open in new tab</b>. Try <code>https://example.com/?postern=1</code>. A <code>javascript:</code> link should be refused on the phone.</p>
+    </section>
+  </main>
+
+  <script src="playground.js"></script>
+</body>
+</html>

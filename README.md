@@ -31,7 +31,7 @@ LAPTOP (Chrome extension)                       PHONE (web page, no install)
 | `phone/` | Phone web page (built into `relay/public/`) |
 | `relay/` | Cloudflare Worker + Durable Object: relay API and phone page hosting |
 | `scripts/build.mjs` | Bundles everything with esbuild (no CDNs or remote code) |
-| `test/` | Unit tests (`npm test`) and end-to-end relay test (`npm run test:e2e`) |
+| `test/` | Unit tests (`npm test`), end-to-end relay test (`npm run test:e2e`) and a playground page for manual testing (`npm run playground`) |
 
 ## Security design
 
@@ -60,6 +60,7 @@ npm install
 npm test            # crypto unit tests
 npm run dev         # builds, then runs relay + phone page at http://localhost:8787
 npm run test:e2e    # in a second terminal: full transfer through the local relay
+npm run playground  # test page with every field type at http://localhost:8788
 ```
 
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `extension/dist`.
