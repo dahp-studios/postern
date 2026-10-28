@@ -7,13 +7,28 @@
   <meta name="robots" content="noindex">
   <meta name="color-scheme" content="light dark">
   <title>Postern</title>
+  <meta name="theme-color" content="#2457d6">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
     <p class="brand">Postern</p>
     <h1>Send to your laptop</h1>
+
+    <section id="start" hidden>
+      <p class="hint">Open Postern on your laptop and scan its QR code, either with your phone's camera app or here.</p>
+      <button type="button" id="scan-start" class="primary">Scan the laptop's QR code</button>
+      <p class="hint small">Tip: add this page to your home screen to use it like an app.</p>
+    </section>
+
+    <section id="scanner" hidden>
+      <video id="video" muted playsinline></video>
+      <p id="scanner-status" class="hint" role="status">Point the camera at the QR code on your laptop.</p>
+      <button type="button" id="scanner-cancel">Cancel</button>
+    </section>
 
     <section id="send" hidden>
       <p class="hint">It's encrypted on this phone. Only the laptop that showed the QR code can read it.</p>
@@ -59,16 +74,30 @@
         </div>
 
         <button type="submit" id="submit">Send</button>
+        <button type="button" id="show-qr" class="link">No internet? Show as QR</button>
       </form>
+    </section>
+
+    <section id="offline" hidden>
+      <p>On the laptop, click <b>Scan phone's QR</b> in Postern and hold this screen up to the camera.</p>
+      <canvas id="offline-qr" class="qr" role="img" aria-label="Encrypted message as a QR code"></canvas>
+      <p class="hint small">The code holds the encrypted message. Only your laptop can open it. Check that the laptop then shows:</p>
+      <p id="offline-code" class="code"></p>
+      <button type="button" id="offline-back">Back</button>
     </section>
 
     <section id="done" hidden>
       <p>Sent. Check that your laptop shows this code:</p>
       <p id="code" class="code" aria-live="polite"></p>
+      <p id="done-queued" class="hint" hidden>Your laptop is reconnecting. It gets the message as soon as it's back, within 2 minutes.</p>
       <p class="hint">If the codes don't match, discard it on the laptop.</p>
     </section>
 
-    <p id="error" class="error" role="alert" hidden></p>
+    <div id="error-box">
+      <p id="error" class="error" role="alert" hidden></p>
+      <button type="button" id="error-qr" class="link" hidden>Show it as a QR code for the laptop's camera instead</button>
+    </div>
+    <p class="footer"><a href="privacy">Privacy</a></p>
   </main>
   <script type="module" src="app.js"></script>
 </body>

@@ -1,19 +1,23 @@
 {
   "name": "postern",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "Postern: a private gate from your phone to your browser. End-to-end encrypted transfer via a QR code.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "dev": "node scripts/build.mjs && cd relay && wrangler dev --ip 0.0.0.0 --port 8787",
+    "dev": "node scripts/build.mjs && cd relay && wrangler dev --ip 0.0.0.0 --port 8787 --var RATE_LIMIT:off",
     "test": "node --test test/protocol.test.mjs",
     "test:e2e": "node test/e2e.mjs",
-    "playground": "node scripts/playground.mjs"
+    "playground": "node scripts/playground.mjs",
+    "build:release": "PT_SERVER=https://postern.dahp.io node scripts/build.mjs",
+    "package": "npm run build:release && node scripts/package.mjs",
+    "deploy": "npm run build:release && cd relay && wrangler deploy"
   },
   "dependencies": {
     "@hpke/core": "1.9.0",
     "@hpke/dhkem-x25519": "1.8.0",
+    "jsqr": "1.4.0",
     "qrcode-generator": "2.0.4"
   },
   "devDependencies": {

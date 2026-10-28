@@ -10,6 +10,9 @@ import {
   cleanFileName,
   fileAsText,
   isSafeUrl,
+  encodeOfflinePayload,
+  decodeOfflinePayload,
+  MAX_OFFLINE_PAYLOAD,
 } from "../shared/protocol.js";
 
 async function roundTrip(item) {
@@ -139,4 +142,40 @@ test("link build and parse", async () => {
   assert.deepEqual(parseLinkFragment(url.hash), { sessionId: rx.sessionId, publicKey: rx.publicKey });
   assert.equal(parseLinkFragment("#v=2&id=x&k=y"), null);
   assert.equal(parseLinkFragment(""), null);
+});
+
+test("a saved receiver can be restored and decrypts", async () => {
+  const rx = await createReceiver();
+  const saved = await rx.save();
+  assert.match(saved.privateKey, /^[A-Za-z0-9_-]{43}$/);
+  const restored = await createReceiver(saved);
+  assert.equal(restored.sessionId, rx.sessionId);
+  assert.equal(restored.publicKey, rx.publicKey);
+  const { message, code } = await sealItem({ ...rx, item: { type: "password", text: "restored" } });
+  const opened = await restored.open(message);
+  assert.equal(opened.code, code);
+  assert.equal(opened.item.text, "restored");
+  await assert.rejects(createReceiver({ ...saved, sessionId: "bad" }));
+});
+
+test("offline QR payload round trip and limits", async () => {
+  const rx = await createReceiver();
+  const { message, code } = await sealItem({ ...rx, item: { type: "password", text: "offline-Pass!" } });
+  const text = encodeOfflinePayload(rx.sessionId, message);
+  assert.ok(text.length < 300, `password payload is ${text.length} chars`);
+  const decoded = decodeOfflinePayload(text);
+  assert.equal(decoded.sessionId, rx.sessionId);
+  const opened = await rx.open(decoded.message);
+  assert.equal(opened.code, code);
+  assert.equal(opened.item.text, "offline-Pass!");
+
+  // About 600 characters of text fits; 2,000 doesn't.
+  const fits = await sealItem({ ...rx, item: { type: "text", text: "x".repeat(600) } });
+  assert.ok(encodeOfflinePayload(rx.sessionId, fits.message).length <= MAX_OFFLINE_PAYLOAD);
+  const big = await sealItem({ ...rx, item: { type: "text", text: "x".repeat(2000) } });
+  assert.throws(() => encodeOfflinePayload(rx.sessionId, big.message), /Too large/);
+
+  for (const bad of ["", "https://example.com", "PT1.short.a.b", `PT2.${rx.sessionId}.${message.enc}.${message.ct}`, `PT1.${rx.sessionId}.${message.enc}.<script>`]) {
+    assert.equal(decodeOfflinePayload(bad), null, bad);
+  }
 });

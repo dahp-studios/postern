@@ -7,65 +7,93 @@ from your phone to Chrome on your laptop. On the laptop you can fill it into the
 link, copy it, or save the file.
 
 The extension shows a QR code, the phone scans it, and the item travels end-to-end encrypted.
-Nothing to install on the phone, no accounts.
+Nothing to install on the phone, no accounts. Works without internet too (two-QR offline mode).
 
 ```
-LAPTOP (Chrome extension)                       PHONE (web page, no install)
-1. Click into a field (optional), open the extension
+LAPTOP (Chrome extension)                       PHONE (web page or home-screen app)
+1. Click into a field (optional), open Postern
 2. New one-time X25519 key pair
    QR: https://<server>/#v=1&id=<session>&k=<public key>
                     ───── QR (scanned by phone camera) ─────▶ 3. Page opens; pick Password/Text/Link/File
                                                               4. HPKE-encrypt to the laptop's key
             ◀──── WebSocket ──── RELAY ◀──── POST ciphertext ─┘
                      (one-time mailbox, ciphertext only, 2 min TTL)
+   or, offline:
+            ◀──── laptop webcam ──── phone shows the ciphertext as a QR code
 5. Decrypt, show 4-digit code; user checks it matches the phone
 6. Fill the field, open the link, copy, or save the file
 ```
+
+## Using it
+
+- **Open Postern:** right-click a field → **Postern: receive from phone**, the toolbar icon, or **Alt+Shift+P**.
+- **The popup can close.** The background worker keeps waiting, so clicking elsewhere loses nothing.
+  When something arrives, the popup reopens by itself (or the icon shows a green **1**).
+- **What arrived is kept for 3 minutes.** If no field was selected, click into the field and open
+  Postern again; no need to resend.
+- **No internet?** On the phone, tap **No internet? Show as QR**. On the laptop, click
+  **Scan phone's QR** and hold the phone up to the webcam. Works for passwords, links and text
+  up to about 600 characters. The phone page must have been opened once before while online.
+- **Home-screen app:** open the server address on the phone and add it to the home screen. Opened
+  from there, it scans the laptop's QR code itself.
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `shared/protocol.js` | Encryption and link format, used by both sides |
-| `extension/` | Chrome MV3 extension (popup, settings, field filling) |
-| `phone/` | Phone web page (built into `relay/public/`) |
+| `shared/protocol.js` | Encryption, link and offline QR formats, used by both sides |
+| `shared/scanner.js`, `shared/qr.js` | Camera QR reader (BarcodeDetector or jsQR) and QR drawing |
+| `extension/` | Chrome MV3 extension: popup, background session, scan page, settings, field filling |
+| `phone/` | Phone web page, installable with offline support (built into `relay/public/`) |
 | `relay/` | Cloudflare Worker + Durable Object: relay API and phone page hosting |
-| `scripts/build.mjs` | Bundles everything with esbuild (no CDNs or remote code) |
-| `test/` | Unit tests (`npm test`), end-to-end relay test (`npm run test:e2e`) and a playground page for manual testing (`npm run playground`) |
+| `scripts/` | Build (esbuild, no CDNs or remote code), packaging, playground server |
+| `store/` | Chrome Web Store listing text |
+| `test/` | Unit tests, end-to-end relay test, and a playground page for manual testing |
 
 ## Security design
 
 - **HPKE (RFC 9180)** base mode: DHKEM(X25519, HKDF-SHA256), HKDF-SHA256, AES-256-GCM,
   via [`@hpke/core`](https://github.com/dajiaji/hpke-js). No custom crypto.
-- **Fresh key pair per session.** The private key never leaves the extension popup and is dropped when it closes.
-- **The relay sees only ciphertext.** It can't decrypt; it holds nothing on disk; each session takes exactly one message and expires after 2 minutes.
-- **The key travels in the URL fragment** (`#…`), which browsers never send to servers. The phone page then removes it from the address bar.
-- **Ciphertext is bound to the session ID** (AEAD associated data), so a message can't be replayed into another session.
-- **Confirmation code** from the HPKE exporter: if someone who photographed the QR injects their own message, the laptop's code won't match the phone's, and the user discards it.
+- **Fresh key pair per session.** The private key stays in the extension's memory-only session
+  storage (never on disk, extension pages only) and is deleted as soon as one message is opened,
+  when the session is cancelled or expires, or when the browser closes.
+- **The relay sees only ciphertext.** It can't decrypt; it holds nothing on disk; each session takes
+  exactly one message and expires after 2 minutes. When the laptop cancels, the relay ends the
+  session so the phone is told rather than left thinking it was delivered.
+- **The key travels in the URL fragment** (`#…`), which browsers never send to servers. The phone
+  page then removes it from the address bar.
+- **Ciphertext is bound to the session ID** (AEAD associated data), so a message can't be replayed
+  into another session. The offline QR carries the same ciphertext as the relay would.
+- **Confirmation code** from the HPKE exporter: if someone who photographed the QR injects their
+  own message, the laptop's code won't match the phone's, and the user discards it.
 - **Padding** (128-byte steps for short items, 4 KB for large ones) hides the exact length.
 - **Phone page CSP** allows only same-origin scripts and connections; no third-party code or analytics.
 - **Passwords never touch the clipboard.** They go straight into the focused field. Copy is offered
   only for text and links.
 - **Links are limited to http(s)** on both sides, so a `javascript:` or `file:` link can't be opened.
 - **File names are cleaned** of path parts and unsafe characters before saving.
+- **Relay rate limit:** 30 API requests a minute per IP.
+- **Settings accept only https servers** (plain http only for localhost).
 - **Limits:** password 1,024 characters, text 10,000, link 4,096, file 256 KB.
 
-Trust note: the phone page's code is downloaded from the server each time (same model as any
-web app). A future native app or pinned PWA removes that.
+Trust note: the phone page's code comes from the server (same model as any web app). The service
+worker uses network first, so a fixed version reaches phones as soon as they're online.
 
 ## Develop locally
 
 ```sh
 npm install
 npm test            # crypto unit tests
-npm run dev         # builds, then runs relay + phone page at http://localhost:8787
+npm run dev         # builds, then runs relay + phone page at http://localhost:8787 (no rate limit)
 npm run test:e2e    # in a second terminal: full transfer through the local relay
 npm run playground  # test page with every field type at http://localhost:8788
 ```
 
+`PT_TEST_RATE_LIMIT=1 PT_SERVER=http://localhost:<port> npm run test:e2e` also checks the rate limit,
+against a relay started with plain `npx wrangler dev` (rate limit on).
+
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `extension/dist`.
-Open it on a password field by right-clicking the field → **Postern: receive from phone**, clicking the
-toolbar icon, or pressing **Alt+Shift+P**.
+It also works in **Microsoft Edge** (`edge://extensions`, same steps).
 
 ### Testing with a real phone
 
@@ -79,25 +107,23 @@ cloudflared tunnel --url http://localhost:8787    # prints https://<random>.tryc
 
 Put that URL in the extension's **Settings** (or rebuild with `PT_SERVER=https://… npm run build`).
 
-Note: the extension popup closes when it loses focus, ending the session. Opening the phone link
-in another tab on the same laptop closes it, so test with a phone (or `npm run test:e2e`).
+## Release
 
-## Deploy (later)
+Production is `https://postern.dahp.io`: a Worker custom domain on the dahp.io Cloudflare zone.
+It adds one record for the `postern` subdomain only; the website's records are untouched.
 
-DNS for the company domain is on Cloudflare, so the Worker can get its own subdomain without
-touching the existing website records:
+```sh
+npx wrangler login                                  # once, in the browser
+npm run deploy                                      # builds and deploys the relay + phone page
+PT_SERVER=https://postern.dahp.io npm run test:e2e  # checks the live relay
+npm run package                                     # dist/postern-extension-<version>.zip for the Web Store
+```
 
-1. `cd relay && npx wrangler login && npx wrangler deploy`
-2. Cloudflare dashboard → Workers → `postern` → Settings → Domains → add a custom
-   domain such as `postern.<company-domain>`.
-3. `PT_SERVER=https://postern.<company-domain> npm run build`, then pack `extension/dist` for the Chrome Web Store.
-4. `PT_SERVER=https://postern.<company-domain> npm run test:e2e`
+`npm run package` builds the extension pointing at production and refuses to zip a development build.
+Store listing text and permission justifications are in `store/listing.md`.
 
 ## Roadmap
 
-- Offline two-QR mode (laptop webcam scans the phone's ciphertext QR; no relay)
 - Native phone app via Universal Links / App Links (same QR link opens it when installed)
-- Installable PWA
-- Keep the session alive if the popup loses focus (in-page overlay or small window)
-- Relay rate limiting; Firefox/Edge builds
+- Firefox build (needs an event-page background instead of a service worker)
 - Larger files (chunked transfer)

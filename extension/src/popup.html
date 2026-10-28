@@ -10,9 +10,14 @@
 
   <section id="waiting" hidden>
     <p>Scan with your phone's camera:</p>
-    <img id="qr" alt="QR code to scan with your phone">
-    <p class="muted"><span id="status">Waiting for phone…</span> <span id="timer"></span></p>
+    <canvas id="qr" role="img" aria-label="QR code to scan with your phone"></canvas>
+    <p class="muted"><span id="status">Connecting…</span> <span id="timer"></span></p>
+    <p id="offline-hint" class="muted small" hidden>Your phone can still send: after scanning, tap <b>No internet? Show as QR</b>, then scan the phone's screen below.</p>
     <p id="no-field" class="muted small" hidden>No text field is selected. Links and files still work. To fill a password or text, click into the field first, then open Postern.</p>
+    <div class="row">
+      <button id="scan" type="button">Scan phone's QR</button>
+      <button id="cancel" type="button">Cancel</button>
+    </div>
   </section>
 
   <section id="received" hidden>
@@ -21,14 +26,18 @@
     <p class="muted small">Does your phone show this code? Only continue if it matches.</p>
     <p id="code" class="code"></p>
     <div id="actions" class="actions"></div>
+    <p id="received-timer" class="muted small"></p>
   </section>
 
   <section id="message" hidden>
     <p id="message-text"></p>
-    <button id="retry" hidden>Try again</button>
+    <button id="retry" class="primary" hidden>New QR code</button>
   </section>
 
-  <footer><a href="options.html" target="_blank" class="muted small">Settings</a></footer>
+  <footer>
+    <span id="server" class="muted small" hidden></span>
+    <a href="options.html" target="_blank" class="muted small">Settings</a>
+  </footer>
   <script type="module" src="popup.js"></script>
 </body>
 </html>

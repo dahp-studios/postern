@@ -3,11 +3,16 @@
   "name": "postern",
   "main": "src/index.js",
   "compatibility_date": "2026-09-01",
+  // Production address, created by `npm run deploy`. Only this subdomain; the dahp.io site is untouched.
+  "routes": [{ "pattern": "postern.dahp.io", "custom_domain": true }],
+  "workers_dev": false,
   // The phone page, built from ../phone by `npm run build`.
   "assets": { "directory": "./public", "binding": "ASSETS" },
   "durable_objects": {
     "bindings": [{ "name": "SESSIONS", "class_name": "Session" }]
   },
+  // 30 API requests a minute per IP (a transfer takes two). Simulated locally by wrangler dev.
+  "ratelimits": [{ "name": "LIMITER", "namespace_id": "1001", "simple": { "limit": 30, "period": 60 } }],
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Session"] }],
   "observability": { "enabled": false }
 }

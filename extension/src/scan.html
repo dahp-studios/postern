@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Postern: scan phone's QR</title>
+  <link rel="stylesheet" href="popup.css">
+  <style>
+    body { width: auto; max-width: 640px; margin: 24px auto; text-align: center; }
+    video { width: 100%; max-width: 640px; border-radius: 8px; background: #000; transform: scaleX(-1); }
+    #status { font-size: 15px; }
+    #status.error { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <h1>Scan the phone's QR code</h1>
+  <video id="video" muted playsinline></video>
+  <p id="status" class="muted" role="status">Starting the camera…</p>
+  <p class="muted small">The camera picture stays on this computer. The QR code holds the encrypted message, which only this browser can open.</p>
+  <script type="module" src="scan.js"></script>
+</body>
+</html>
