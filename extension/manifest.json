@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Postern",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "A private gate from your phone to your browser. Send passwords, text, links and files, end-to-end encrypted.",
-  "minimum_chrome_version": "116",
+  "minimum_chrome_version": "120",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -20,7 +20,8 @@
   },
   "background": { "service_worker": "background.js" },
   "options_page": "options.html",
-  "permissions": ["activeTab", "contextMenus", "scripting", "storage"],
+  "homepage_url": "https://postern.dahp.io/",
+  "permissions": ["activeTab", "alarms", "contextMenus", "scripting", "storage"],
   "commands": {
     "_execute_action": {
       "suggested_key": { "default": "Alt+Shift+P" },

@@ -54,7 +54,11 @@ button {
   cursor: pointer;
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
-footer { margin-top: 10px; text-align: right; }
+footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+footer #server { margin-right: auto; }
+#waiting .row { margin-top: 8px; }
+#waiting .row button { font-size: 13px; padding: 6px 8px; }
+#message button { width: 100%; }
 .title { font-weight: 600; overflow-wrap: anywhere; }
 .preview {
   max-height: 120px;

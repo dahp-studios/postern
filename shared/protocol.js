@@ -148,16 +148,34 @@ function decodePlaintext(bytes) {
   return validateItem({ type: body?.t, text: body?.v });
 }
 
-/** Laptop side: create a one-time key pair and session. */
-export async function createReceiver() {
-  const keyPair = await suite.kem.generateKeyPair();
+/**
+ * Laptop side: create a one-time key pair and session, or restore one saved with `save()`.
+ * Saving lets another extension page (or a restarted service worker) finish the same session.
+ */
+export async function createReceiver(saved) {
+  let keyPair;
+  let sessionId;
+  if (saved) {
+    if (!isValidSessionId(saved.sessionId) || !PUBLIC_KEY_RE.test(saved.publicKey ?? "")) throw new Error("Invalid saved session");
+    keyPair = {
+      privateKey: await suite.kem.deserializePrivateKey(fromBase64Url(saved.privateKey)),
+      publicKey: await suite.kem.deserializePublicKey(fromBase64Url(saved.publicKey)),
+    };
+    sessionId = saved.sessionId;
+  } else {
+    keyPair = await suite.kem.generateKeyPair();
+    sessionId = toBase64Url(crypto.getRandomValues(new Uint8Array(16)));
+  }
   const publicKey = toBase64Url(await suite.kem.serializePublicKey(keyPair.publicKey));
-  const sessionId = toBase64Url(crypto.getRandomValues(new Uint8Array(16)));
   let used = false;
 
   return {
     sessionId,
     publicKey,
+    /** The private key in a storable form. Keep it in memory-only storage and delete it once used. */
+    async save() {
+      return { sessionId, publicKey, privateKey: toBase64Url(await suite.kem.serializePrivateKey(keyPair.privateKey)) };
+    },
     /** Decrypt the phone's message. Works once; the key is single-use. */
     async open(message) {
       if (used) throw new Error("Session already used");
@@ -202,4 +220,25 @@ export function parseLinkFragment(hash) {
   if (params.get("v") !== String(PROTOCOL_VERSION)) return null;
   if (!isValidSessionId(sessionId) || !publicKey || !PUBLIC_KEY_RE.test(publicKey)) return null;
   return { sessionId, publicKey };
+}
+
+// Offline mode: with no internet, the phone shows its sealed message as a QR code and the
+// laptop scans it with the webcam. Same ciphertext as the relay carries, so the same guarantees.
+//   PT1.<session id>.<enc>.<ct>   (all base64url)
+const OFFLINE_PREFIX = "PT1";
+// Keeps the QR small enough for a laptop webcam to read off a phone screen (about 600 characters of text).
+export const MAX_OFFLINE_PAYLOAD = 1000;
+
+export function encodeOfflinePayload(sessionId, message) {
+  const text = [OFFLINE_PREFIX, sessionId, message.enc, message.ct].join(".");
+  if (text.length > MAX_OFFLINE_PAYLOAD) throw new Error("Too large to show as a QR code");
+  return text;
+}
+
+/** Returns { sessionId, message } or null if the text isn't a Postern offline code. */
+export function decodeOfflinePayload(text) {
+  const parts = String(text).trim().split(".");
+  if (parts.length !== 4 || parts[0] !== OFFLINE_PREFIX || !isValidSessionId(parts[1])) return null;
+  if (!/^[A-Za-z0-9_-]{43}$/.test(parts[2]) || !/^[A-Za-z0-9_-]+$/.test(parts[3])) return null;
+  return { sessionId: parts[1], message: { v: PROTOCOL_VERSION, enc: parts[2], ct: parts[3] } };
 }

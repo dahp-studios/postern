@@ -87,6 +87,47 @@ await step("second laptop connection to the same session is refused", async () =
   ws.close();
 });
 
+await step("the laptop gets pong for ping (keeps Chrome's background worker awake)", async () => {
+  const laptop = await createReceiver();
+  const ws = new WebSocket(`${wsBase}/api/s/${laptop.sessionId}`);
+  await opened(ws);
+  const reply = waitForMessage(ws);
+  ws.send("ping");
+  assert.equal(await reply, "pong");
+  ws.close();
+});
+
+await step("a message sent while the laptop reconnects waits for it", async () => {
+  const laptop = await createReceiver();
+  const first = new WebSocket(`${wsBase}/api/s/${laptop.sessionId}`);
+  await opened(first);
+  first.close();
+  await new Promise((r) => setTimeout(r, 300));
+  const { message, code } = await sealItem({ ...laptop, item: { type: "text", text: "queued" } });
+  const res = await post(laptop.sessionId, JSON.stringify(message));
+  assert.equal(res.status, 202);
+  assert.equal((await post(laptop.sessionId, JSON.stringify(message))).status, 410);
+
+  const again = new WebSocket(`${wsBase}/api/s/${laptop.sessionId}`);
+  await opened(again);
+  const incoming = waitForMessage(again);
+  again.send("ping");
+  const data = await incoming;
+  const result = await laptop.open(JSON.parse(data === "pong" ? await waitForMessage(again) : data));
+  assert.equal(result.item.text, "queued");
+  assert.equal(result.code, code);
+});
+
+await step("after the laptop cancels (close code 4001), the phone is told the session is over", async () => {
+  const laptop = await createReceiver();
+  const ws = new WebSocket(`${wsBase}/api/s/${laptop.sessionId}`);
+  await opened(ws);
+  ws.close(4001, "cancelled");
+  await new Promise((r) => setTimeout(r, 300));
+  const { message } = await sealItem({ ...laptop, item: { type: "text", text: "too late" } });
+  assert.equal((await post(laptop.sessionId, JSON.stringify(message))).status, 410);
+});
+
 await step("bad input is rejected", async () => {
   const laptop = await createReceiver();
   assert.equal((await post("short", "{}")).status, 404);
@@ -94,6 +135,14 @@ await step("bad input is rejected", async () => {
   assert.equal((await post(laptop.sessionId, '{"v":1}')).status, 400);
   assert.equal((await post(laptop.sessionId, "x".repeat(800 * 1024))).status, 413);
 });
+
+if (process.env.PT_TEST_RATE_LIMIT) {
+  await step("too many requests from one IP get 429", async () => {
+    const statuses = [];
+    for (let i = 0; i < 40; i++) statuses.push((await post((await createReceiver()).sessionId, "{}")).status);
+    assert.ok(statuses.includes(429), `statuses: ${[...new Set(statuses)]}`);
+  });
+}
 
 console.log("\nAll end-to-end checks passed.");
 process.exit(0);

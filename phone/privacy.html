@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Postern Privacy</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="doc">
+    <p class="brand">Postern</p>
+    <h1>Privacy</h1>
+    <p>Postern sends a password, text, link or file from your phone to your browser. It is built so that nobody but your browser can read what you send, including us.</p>
+
+    <h2>What we can't see</h2>
+    <p>Everything is encrypted on your phone before it leaves, using a one-time key that only your browser holds (HPKE, RFC 9180: X25519, HKDF-SHA256 and AES-256-GCM). The key never reaches our server: it's in the part of the QR link after the <code>#</code>, which browsers don't send.</p>
+
+    <h2>What passes through our server</h2>
+    <ul>
+      <li>The encrypted message, held in memory only until your browser receives it, then deleted. Nothing is written to disk. Unclaimed sessions are deleted after 2 minutes.</li>
+      <li>A random session ID, which links the phone to the waiting browser.</li>
+      <li>Your IP address, used only to limit how many requests one address can make per minute. Postern doesn't log it or keep it.</li>
+    </ul>
+    <p>Our hosting provider, Cloudflare, handles the network traffic under its own privacy policy.</p>
+
+    <h2>What we don't do</h2>
+    <ul>
+      <li>No accounts, cookies, analytics, ads or tracking.</li>
+      <li>We don't sell or share anything, because we don't have anything to share.</li>
+    </ul>
+
+    <h2>The browser extension</h2>
+    <p>The extension stores only your server setting. While a transfer is in progress, the one-time key and what arrived are kept in the browser's memory-only session storage. They are deleted when you use or discard the item, after 3 minutes, or when the browser closes. The extension touches a page only when you open Postern on it, and then only to fill the field you selected.</p>
+
+    <h2>Offline mode</h2>
+    <p>When you show the encrypted message as a QR code, the laptop's camera reads it locally. The camera picture doesn't leave your computer.</p>
+
+    <h2>Contact</h2>
+    <p>Questions: <a href="mailto:info@dahp.io">info@dahp.io</a></p>
+    <p class="hint small">Last updated 28 October 2026.</p>
+  </main>
+</body>
+</html>
