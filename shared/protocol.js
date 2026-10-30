@@ -42,6 +42,10 @@ const suite = new CipherSuite({
   aead: new Aes256Gcm(),
 });
 
+// Exported so the tests can check this exact configuration against the RFC 9180 test vectors
+// and attack it directly. Nothing else should need them.
+export { suite as cipherSuite, INFO as HPKE_INFO };
+
 export function toBase64Url(bytes) {
   const arr = new Uint8Array(bytes);
   let bin = "";
