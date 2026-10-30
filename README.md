@@ -79,11 +79,47 @@ LAPTOP (Chrome extension)                       PHONE (web page or home-screen a
 Trust note: the phone page's code comes from the server (same model as any web app). The service
 worker uses network first, so a fixed version reaches phones as soon as they're online.
 
+## Verifying the security yourself
+
+```sh
+npm test         # 39 tests, including the two suites below
+npm run verify   # with `npm run dev` running: records what the relay really sees
+```
+
+- **`test/rfc9180.test.mjs`:** checks Postern's exact HPKE setup against the official RFC 9180
+  test vector for the same suite (`test/vectors/`). Keys, ciphertext and exported values must
+  match byte for byte.
+- **`test/attacks.test.mjs`:** tries to break it as the relay operator and as someone who
+  photographed the QR code:
+  - 200+ wrong keys
+  - flipping every single bit of the ciphertext
+  - cutting, extending and mixing messages
+  - replaying a message into another session
+  - keystream reuse
+  - statistical patterns in 200 KB of zeros
+  - length leaks
+  - downgrades
+  - 1,000 code-matching attempts
+  - correctly encrypted but malicious content
+  - altered offline QR codes
+
+  Every attack must fail. Each test was also checked against a deliberately weakened version
+  of the code, to confirm it catches the weakness.
+- **`npm run verify`:** puts a recording proxy in front of the local relay, sends a password,
+  text, link and file, and searches every recorded byte for them. It checks raw text, UTF-16,
+  hex, base64/base64url at every alignment, URL and JSON encodings, and 8-byte fragments.
+  WebSocket frames are unmasked and decompressed first. It also checks that no key travels,
+  and includes an unencrypted control message that must be found. The full recording is
+  written to `verify-capture.log`.
+
+To check by hand, open a QR link in a desktop tab with DevTools → Network: the `POST` body is
+`{"v":1,"enc":…,"ct":…}`, and the page request is a bare `GET /`, without the `#…` key.
+
 ## Develop locally
 
 ```sh
 npm install
-npm test            # crypto unit tests
+npm test            # unit, RFC 9180 vector and attack tests
 npm run dev         # builds, then runs relay + phone page at http://localhost:8787 (no rate limit)
 npm run test:e2e    # in a second terminal: full transfer through the local relay
 npm run playground  # test page with every field type at http://localhost:8788
