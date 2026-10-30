@@ -138,9 +138,10 @@ await step("bad input is rejected", async () => {
 
 if (process.env.PT_TEST_RATE_LIMIT) {
   await step("too many requests from one IP get 429", async () => {
+    // Cloudflare's limiter counts with a short delay, so a burst can pass the limit before it kicks in.
     const statuses = [];
-    for (let i = 0; i < 40; i++) statuses.push((await post((await createReceiver()).sessionId, "{}")).status);
-    assert.ok(statuses.includes(429), `statuses: ${[...new Set(statuses)]}`);
+    for (let i = 0; i < 100 && !statuses.includes(429); i++) statuses.push((await post((await createReceiver()).sessionId, "{}")).status);
+    assert.ok(statuses.includes(429), `no 429 in ${statuses.length} requests`);
   });
 }
 

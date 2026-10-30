@@ -145,8 +145,10 @@ Put that URL in the extension's **Settings** (or rebuild with `PT_SERVER=https:/
 
 ## Release
 
-Production is `https://postern.dahp.io`: a Worker custom domain on the dahp.io Cloudflare zone.
-It adds one record for the `postern` subdomain only; the website's records are untouched.
+Production is `https://postern.dahp.io` (live since 30 October 2026): a Worker custom domain on the
+dahp.io Cloudflare zone. It adds one record for the `postern` subdomain only; the website's records
+are untouched. The account's `dahp.workers.dev` subdomain exists because Cloudflare requires one, but
+Postern's `workers.dev` address is turned off (`workers_dev: false`).
 
 ```sh
 npx wrangler login                                  # once, in the browser
