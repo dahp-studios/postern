@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Postern for Developers</title>
+  <meta name="description" content="Add a Send from phone button to any website or app. End-to-end encrypted with HPKE (RFC 9180). Open source.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="wide doc">
+    <p class="brand">Postern for developers</p>
+    <h1>Let people send passwords and files from their phone to your page</h1>
+    <p class="lede">Add one button. Your users scan a QR code, type or paste on their phone, and the field fills, end-to-end encrypted. No app to install and no accounts. Works on websites, smart-TV web apps and anything that runs JavaScript, and through a plain REST API everywhere else.</p>
+
+    <section class="demo" aria-labelledby="demo-title">
+      <h2 id="demo-title">Try it</h2>
+      <p class="hint">Click <b>From phone</b> next to a field and scan the QR code with your phone.</p>
+      <form id="demo-form" class="demo-form" autocomplete="off" novalidate>
+        <label for="demo-email">Email</label>
+        <div class="row"><input id="demo-email" type="email" placeholder="you@example.com" data-postern></div>
+        <label for="demo-password">Password</label>
+        <div class="row"><input id="demo-password" type="password" data-postern></div>
+        <label for="demo-config">Config (paste or send a JSON file)</label>
+        <div class="row"><textarea id="demo-config" rows="3" data-postern></textarea></div>
+      </form>
+      <p id="demo-log" class="hint small" role="status">Nothing received yet.</p>
+    </section>
+
+    <h2>Install</h2>
+    <div class="code-block"><pre><code>npm install @dahp/postern</code></pre></div>
+    <p>Or without a build step, from a CDN:</p>
+    <div class="code-block"><pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/@dahp/postern@1/dist/postern.global.js"&gt;&lt;/script&gt;</code></pre></div>
+
+    <h2>Add the button</h2>
+    <p>Mark the fields, then attach. The button fills the field after the user checks the 4-digit code.</p>
+    <div class="code-block"><pre><code>&lt;input type="password" id="password" data-postern&gt;
+
+&lt;script type="module"&gt;
+  import { attachAll } from "@dahp/postern/ui";
+  attachAll();
+&lt;/script&gt;</code></pre></div>
+    <p>Or place the button yourself with the web component, which works in React, Vue, Svelte and plain HTML:</p>
+    <div class="code-block"><pre><code>&lt;input type="password" id="password"&gt;
+&lt;postern-button for="password"&gt;&lt;/postern-button&gt;</code></pre></div>
+    <p>To handle what arrives yourself (a file, for example), listen for the event and cancel the default fill:</p>
+    <div class="code-block"><pre><code>button.addEventListener("postern-receive", (event) =&gt; {
+  event.preventDefault();
+  const { item, code } = event.detail; // item: { type, text } or { type: "file", name, mime, bytes }
+});</code></pre></div>
+
+    <h2>Your own interface</h2>
+    <p><code>open()</code> shows the dialog and returns what the user confirmed. <code>receive()</code> has no interface at all, for TV apps, kiosks and custom designs: show <code>session.link</code> as a QR code and wait.</p>
+    <div class="code-block"><pre><code>import { receive, drawQr } from "@dahp/postern";
+
+const session = await receive({ types: ["password", "text"] });
+drawQr(canvas, session.link);
+const { item, code } = await session.result; // show code; use item once the user confirms</code></pre></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Option</th><th>What it does</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>server</code></td><td>Relay address, or your self-hosted relay</td><td><code>https://postern.dahp.io</code></td></tr>
+          <tr><td><code>types</code></td><td>What the phone may send: <code>password</code>, <code>text</code>, <code>url</code>, <code>file</code></td><td>All; a password field asks for passwords and text</td></tr>
+          <tr><td><code>transport</code></td><td><code>websocket</code>, <code>poll</code> (plain HTTP) or <code>auto</code></td><td><code>auto</code></td></tr>
+          <tr><td><code>scanner</code></td><td>Offline mode: pass <code>startScanner</code> from <code>@dahp/postern/scanner</code></td><td>Off</td></tr>
+          <tr><td><code>signal</code></td><td>An AbortSignal that cancels the session</td><td>None</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Content-Security-Policy</h2>
+    <p>If your site sets one, allow the relay:</p>
+    <div class="code-block"><pre><code>connect-src https://postern.dahp.io wss://postern.dahp.io</code></pre></div>
+    <p>The dialog needs no inline styles or scripts.</p>
+
+    <h2>Other platforms: the REST API</h2>
+    <p>Anything that can make HTTPS requests and do HPKE can receive: Android and Google TV (Tink), iOS and Apple TV (CryptoKit), servers, set-top boxes.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Request</th><th>Who</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /api/s/{id}</code> (WebSocket)</td><td>Receiver</td><td>Waits for the message. Send <code>ping</code> every 20 s; the relay answers <code>pong</code>.</td></tr>
+          <tr><td><code>GET /api/s/{id}/wait</code></td><td>Receiver</td><td>Long polling: <b>200</b> with the message, <b>204</b> after 25 s (ask again), <b>410</b> expired or used</td></tr>
+          <tr><td><code>DELETE /api/s/{id}</code></td><td>Receiver</td><td>Cancels the session</td></tr>
+          <tr><td><code>POST /api/s/{id}</code></td><td>Phone</td><td>Body <code>{"v":1,"enc":"…","ct":"…"}</code>. <b>200</b> delivered, <b>202</b> queued for a reconnecting receiver, <b>404</b> nobody waiting, <b>410</b> closed</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The QR code holds <code>https://postern.dahp.io/#v=1&amp;id={session id}&amp;k={public key}</code>, optionally <code>&amp;t=password,text</code>. Encryption is HPKE base mode with DHKEM(X25519, HKDF-SHA256), HKDF-SHA256 and AES-256-GCM, info <code>dahp postern v1</code>, associated data <code>v1:{session id}</code>. The full specification and test vectors are in the project's <code>docs/PROTOCOL.md</code>.</p>
+
+    <h2>Self-host the relay</h2>
+    <p>The relay only passes on ciphertext, but you can run your own. It's the same API and phone page:</p>
+    <div class="code-block"><pre><code>docker build -t postern-relay .
+docker run -p 8790:8790 postern-relay</code></pre></div>
+    <p>Put it behind HTTPS and pass <code>server: "https://postern.example.com"</code>.</p>
+
+    <h2>Security</h2>
+    <ul>
+      <li>Encrypted on the phone with a one-time key that only your page holds. The key travels after the <code>#</code> in the QR link, which browsers never send to servers.</li>
+      <li>The relay holds each ciphertext in memory for at most 2 minutes and can't read it.</li>
+      <li>A 4-digit code on both screens shows the message came from the user's phone, not from someone who photographed the QR code.</li>
+      <li>The encryption matches the official RFC 9180 test vectors, and the test suite attacks it 17 ways.</li>
+    </ul>
+
+    <p class="footer"><a href="/">Send</a> · <a href="receive">Receive</a> · <a href="privacy">Privacy</a> · Apache-2.0 · DAHP Tech LLC</p>
+  </main>
+  <script type="module" src="developers.js"></script>
+</body>
+</html>

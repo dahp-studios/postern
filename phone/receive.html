@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light dark">
+  <title>Postern Receive</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="receiver">
+    <p class="brand">Postern</p>
+    <h1>Receive from your phone</h1>
+
+    <section id="waiting">
+      <p class="hint">Scan with your phone's camera, then send. It's encrypted on the phone; only this page can read it.</p>
+      <canvas id="qr" class="qr" role="img" aria-label="QR code to scan with your phone"></canvas>
+      <p class="hint center"><span id="status" role="status">Connecting…</span> <span id="timer"></span></p>
+      <button type="button" id="scan" class="link">Phone offline? Scan its QR code</button>
+    </section>
+
+    <section id="scanning" hidden>
+      <video id="video" class="mirror" muted playsinline></video>
+      <p id="scan-status" class="hint" role="status">Hold the phone's QR code up to this computer's camera.</p>
+      <button type="button" id="stop-scan">Back</button>
+    </section>
+
+    <section id="received" hidden>
+      <p id="what" class="what"></p>
+      <div id="preview" class="preview" hidden></div>
+      <p class="hint">Does your phone show this code? Only use it if it matches.</p>
+      <p id="code" class="code"></p>
+      <div id="actions" class="actions"></div>
+      <p id="note" class="hint small" hidden></p>
+    </section>
+
+    <section id="message" hidden>
+      <p id="message-text"></p>
+      <button type="button" id="again" class="primary">New QR code</button>
+    </section>
+
+    <p class="hint small">Works in any browser, nothing to install. In Chrome and Edge, the Postern extension fills fields directly.</p>
+    <p class="footer"><a href="/">Send</a> · <a href="developers">For developers</a> · <a href="privacy">Privacy</a></p>
+  </main>
+  <script type="module" src="receive.js"></script>
+</body>
+</html>
