@@ -41,14 +41,30 @@ LAPTOP (Chrome extension)                       PHONE (web page or home-screen a
 
 | Path | What |
 |---|---|
-| `shared/protocol.js` | Encryption, link and offline QR formats, used by both sides |
+| `shared/protocol.js` | Encryption, link and offline QR formats, used everywhere |
 | `shared/scanner.js`, `shared/qr.js` | Camera QR reader (BarcodeDetector or jsQR) and QR drawing |
-| `extension/` | Chrome MV3 extension: popup, background session, scan page, settings, field filling |
-| `phone/` | Phone web page, installable with offline support (built into `relay/public/`) |
-| `relay/` | Cloudflare Worker + Durable Object: relay API and phone page hosting |
-| `scripts/` | Build (esbuild, no CDNs or remote code), packaging, playground server |
-| `store/` | Chrome Web Store listing text |
-| `test/` | Unit tests, end-to-end relay test, and a playground page for manual testing |
+| `extension/` | Browser extension: popup, background session, scan page, settings, field filling |
+| `safari/` | Xcode project that wraps the extension for Safari on macOS (`safari/README.md`) |
+| `packages/postern/` | The npm package `@dahp/postern` for websites and JavaScript apps |
+| `phone/` | Web pages: phone page (installable, offline), `/receive`, `/developers`, `/privacy` |
+| `relay/` | Cloudflare Worker + Durable Object; `relay/src/mailbox.js` is the session logic |
+| `selfhost/`, `Dockerfile` | The same relay as a Node server and Docker image |
+| `docs/PROTOCOL.md` | The protocol specification, with test vectors in `test/vectors/` |
+| `scripts/` | Build (esbuild, no CDNs or remote code), packaging, test vectors, playground server |
+| `store/` | Store listing text, screenshots and promo tile |
+| `test/` | Unit, RFC vector, attack and relay tests; `verify.mjs`; the playground page |
+
+## Where it works
+
+| Receiving side | How |
+|---|---|
+| Chrome, Edge, Brave, Opera | The extension (`extension/dist`) |
+| Firefox 140+ | The extension (`extension/dist-firefox`) |
+| Safari on macOS 13+ | The extension in a Mac app (`safari/`) |
+| Any browser, no install | `postern.dahp.io/receive`: shows the item with Copy, Open and Save |
+| Any website | `npm install @dahp/postern`: a "From phone" button for its fields |
+| Smart-TV web apps, Node, Electron | The npm package, headless `receive()` |
+| Android, Google TV, iOS, Apple TV, anything else | The REST API in `docs/PROTOCOL.md` |
 
 ## Security design
 
@@ -82,7 +98,7 @@ worker uses network first, so a fixed version reaches phones as soon as they're 
 ## Verifying the security yourself
 
 ```sh
-npm test         # 39 tests, including the two suites below
+npm test         # 56 tests, including the suites below
 npm run verify   # with `npm run dev` running: records what the relay really sees
 ```
 
@@ -151,17 +167,40 @@ are untouched. The account's `dahp.workers.dev` subdomain exists because Cloudfl
 Postern's `workers.dev` address is turned off (`workers_dev: false`).
 
 ```sh
-npx wrangler login                                  # once, in the browser
-npm run deploy                                      # builds and deploys the relay + phone page
+npm run deploy                                      # builds and deploys the relay and web pages
 PT_SERVER=https://postern.dahp.io npm run test:e2e  # checks the live relay
-npm run package                                     # dist/postern-extension-<version>.zip for the Web Store
+npm run package                                     # store zips in dist/ (Chrome/Edge, Firefox, source)
+npm run sdk:pack                                    # dist/dahp-postern-<version>.tgz, then `npm publish` it
 ```
 
-`npm run package` builds the extension pointing at production and refuses to zip a development build.
-Store listing text and permission justifications are in `store/listing.md`.
+| Store | Upload | Notes |
+|---|---|---|
+| Chrome Web Store | `dist/postern-chrome-<v>.zip` | Text in `store/listing.md` |
+| Microsoft Edge Add-ons | the same zip | Free developer account |
+| addons.mozilla.org | `dist/postern-firefox-<v>.zip` + `dist/postern-source-<v>.zip` | Build steps for reviewers: `npm ci && npm run build:release` |
+| Mac App Store | Xcode archive | `safari/README.md` |
+| npm | `cd packages/postern && npm publish --access public` | Needs the `dahp` npm organisation |
+
+`npm run package` builds with the production server and refuses to zip a development build.
+
+## Self-hosting the relay
+
+```sh
+docker build -t postern-relay .
+docker run -p 8790:8790 postern-relay     # or: cd selfhost && npm ci && node server.mjs
+```
+
+Put it behind HTTPS, then point the extension (Settings) or the npm package (`server`) at it. It
+passes the same end-to-end tests as the Cloudflare relay. Settings: `PORT`, `RATE_LIMIT`,
+`TRUST_PROXY`, `PUBLIC_DIR` (see `selfhost/server.mjs`).
+
+## License
+
+Apache-2.0 (see `LICENSE` and `NOTICE`). © 2026 DAHP Tech LLC.
 
 ## Roadmap
 
+- Kotlin and Swift libraries for Android, Google TV, iOS and Apple TV
 - Native phone app via Universal Links / App Links (same QR link opens it when installed)
-- Firefox build (needs an event-page background instead of a service worker)
 - Larger files (chunked transfer)
+- Roku (needs X25519 in BrightScript)
