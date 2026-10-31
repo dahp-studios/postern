@@ -54,6 +54,8 @@ button {
   cursor: pointer;
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+.agree { margin: 10px 0 0; font-size: 11px; color: var(--muted); text-align: center; }
+.agree a { color: inherit; }
 footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
 footer #server { margin-right: auto; }
 #waiting .row { margin-top: 8px; }
