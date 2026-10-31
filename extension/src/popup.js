@@ -188,7 +188,7 @@ async function init() {
   }
   const { server, source } = await getServerInfo();
   if (source !== "default") {
-    $("server").textContent = `Server: ${new URL(server).host}${source === "organization" ? " (your organization)" : ""}`;
+    $("server").textContent = `Server: ${new URL(server).host} (development build)`;
     $("server").hidden = false;
   }
   onStateChange(render);
