@@ -4,7 +4,7 @@
 import { fileAsText, isSafeUrl } from "../../shared/protocol.js";
 import { drawQr } from "../../shared/qr.js";
 import { getState, onStateChange, unpackItem } from "./session.js";
-import { DEFAULT_SERVER } from "./settings.js";
+import { getServerInfo } from "./settings.js";
 import { fillFocused, hasFillableFocus, runInFrames } from "./fill.js";
 
 const $ = (id) => document.getElementById(id);
@@ -186,9 +186,9 @@ async function init() {
   } catch {
     // chrome:// pages, the Web Store, etc. don't allow scripts; links and files still work
   }
-  const server = (await chrome.storage.local.get("server")).server;
-  if (server && server !== DEFAULT_SERVER) {
-    $("server").textContent = `Server: ${new URL(server).host}`;
+  const { server, source } = await getServerInfo();
+  if (source !== "default") {
+    $("server").textContent = `Server: ${new URL(server).host}${source === "organization" ? " (your organization)" : ""}`;
     $("server").hidden = false;
   }
   onStateChange(render);

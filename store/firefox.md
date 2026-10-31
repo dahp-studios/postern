@@ -47,15 +47,15 @@ Paste this into "Notes to Reviewer":
 
 Postern receives a password, text, link or file that the user sends from their own phone, end-to-end encrypted, and fills it into the field they selected.
 
-How to test without a phone: click the toolbar icon on any page with a text field. The popup shows a QR code; right-click the popup, choose Inspect, and run document.getElementById("qr").dataset.link in the console. Open that link in another browser or private window: it's the phone page. Type something, press Send, and the popup shows the same 4-digit code with Fill, Copy or Discard.
+How to test without a phone: click into a text field on any page, then click the toolbar icon. The popup shows a QR code; right-click the popup, choose Inspect, and run document.getElementById("qr").dataset.link in the console. Open that link in another browser or private window: it's the phone page. Type something, press Send, and the popup shows the same 4-digit code with Fill, Copy or Discard.
 
 Permissions:
 - activeTab and scripting: fill the received value into the focused field, only on the tab where the user opened Postern, only when they click Fill.
 - contextMenus: the "Postern: receive from phone" right-click entry.
-- storage: the server setting (storage.local) and the current one-time session (storage.session, memory only), so the popup can close and reopen.
+- storage: the current one-time session (storage.session, memory only), so the popup can close and reopen, and an organization's relay address from enterprise policy (storage.managed). Users can't change the server.
 - alarms: delete the one-time key and anything received when the session expires.
 
-Network: the extension connects only to the relay chosen in Settings (default https://postern.dahp.io) over WebSocket. Messages are HPKE ciphertext; the relay can't decrypt them. No data collection (data_collection_permissions: none). No remote code: everything is bundled.
+Network: the extension connects only to https://postern.dahp.io (or a relay an administrator sets by enterprise policy) over WebSocket. Messages are HPKE ciphertext; the relay can't decrypt them. No data collection (data_collection_permissions: none). No remote code: everything is bundled.
 
 Source code: the package is bundled with esbuild from the attached source (no minification). To rebuild:
 1. Node.js 20 or later (tested with 25), npm 10 or later.

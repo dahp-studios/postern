@@ -4,18 +4,23 @@
   <meta charset="utf-8">
   <title>Postern Settings</title>
   <link rel="stylesheet" href="popup.css">
-  <style>body { width: auto; max-width: 520px; margin: 24px auto; } input { width: 100%; box-sizing: border-box; padding: 8px; font: inherit; }</style>
+  <style>body { width: auto; max-width: 520px; margin: 24px auto; } input { width: 100%; box-sizing: border-box; padding: 8px; font: inherit; } .server { font-weight: 600; }</style>
 </head>
 <body>
   <h1>Postern settings</h1>
-  <form id="form">
-    <label for="server">Server URL (phone page and relay)</label>
+
+  <h2>Server</h2>
+  <p class="server" id="server-now"></p>
+  <p class="muted small" id="server-source"></p>
+
+  <form id="custom" hidden>
+    <label for="server">Server URL for testing (phone page and relay)</label>
     <p><input id="server" type="url" placeholder=""></p>
-    <p class="muted small">Leave blank for the default. The phone must be able to open this URL over HTTPS.
-      For testing with a real phone, use a tunnel URL (see README).</p>
+    <p class="muted small">Development builds only. Leave blank for the default. The phone must be able to open this URL over HTTPS, so use a tunnel URL when testing with a real phone (see README).</p>
     <div class="row"><button class="primary" type="submit">Save</button></div>
     <p id="saved" class="muted" hidden>Saved.</p>
   </form>
+
   <h2>About</h2>
   <p class="muted small">Postern encrypts on your phone with a one-time key that only this browser holds (HPKE: X25519, HKDF-SHA256, AES-256-GCM). The server only ever sees ciphertext.
     <a href="https://postern.dahp.io/privacy" target="_blank" rel="noopener">Privacy policy</a></p>

@@ -14,6 +14,9 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const server = process.env.PT_SERVER || "http://localhost:8787";
+// Only development builds (pointing at localhost) let the user type a server into Settings. Store
+// builds use their built-in server, or one an organization sets through managed policy.
+const userServerAllowed = server.startsWith("http://localhost");
 
 const common = { bundle: true, format: "esm", minify: false, sourcemap: false, legalComments: "none", logLevel: "info" };
 
@@ -99,20 +102,22 @@ const extOut = join(root, "extension/dist");
 rmSync(extOut, { recursive: true, force: true });
 mkdirSync(extOut, { recursive: true });
 cpSync(join(root, "extension/icons"), join(extOut, "icons"), { recursive: true });
+cpSync(join(root, "extension/managed_schema.json"), join(extOut, "managed_schema.json"));
 for (const f of ["popup.html", "popup.css", "options.html", "scan.html"]) cpSync(join(root, "extension/src", f), join(extOut, f));
 await build({
   ...common,
   entryPoints: ["popup.js", "options.js", "background.js", "scan.js"].map((f) => join(root, "extension/src", f)),
   outdir: extOut,
   target: ["chrome116", "firefox128", "safari17"],
-  define: { __DEFAULT_SERVER__: JSON.stringify(server) },
+  define: { __DEFAULT_SERVER__: JSON.stringify(server), __USER_SERVER_ALLOWED__: JSON.stringify(userServerAllowed) },
 });
 
 const manifest = JSON.parse(readFileSync(join(root, "extension/manifest.json"), "utf8"));
 const writeManifest = (dir, m) => writeFileSync(join(dir, "manifest.json"), `${JSON.stringify(m, null, 2)}\n`);
 writeManifest(extOut, manifest);
 
-const { minimum_chrome_version, background, ...portable } = manifest;
+// Firefox reads managed settings from policies.json without a schema; Safari has none.
+const { minimum_chrome_version, background, storage, ...portable } = manifest;
 const firefoxOut = join(root, "extension/dist-firefox");
 rmSync(firefoxOut, { recursive: true, force: true });
 cpSync(extOut, firefoxOut, { recursive: true });
@@ -137,4 +142,4 @@ rmSync(safariOut, { recursive: true, force: true });
 cpSync(extOut, safariOut, { recursive: true });
 writeManifest(safariOut, { ...portable, background });
 
-console.log(`\nBuilt with default server ${server}`);
+console.log(`\nBuilt with default server ${server}${userServerAllowed ? " (Settings may change it: development build)" : " (fixed; organizations can set their own by policy)"}`);

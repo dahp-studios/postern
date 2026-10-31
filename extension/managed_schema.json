@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "server": {
+      "title": "Postern relay server",
+      "description": "The https address of your organization's self-hosted Postern relay, for example https://postern.example.com. Leave unset to use https://postern.dahp.io.",
+      "type": "string"
+    }
+  }
+}
