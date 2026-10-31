@@ -91,19 +91,50 @@ writeFileSync(
 mkdirSync(join(phoneOut, "sdk"), { recursive: true });
 for (const f of ["postern.global.js", "postern-scanner.global.js"]) cpSync(join(sdkOut, f), join(phoneOut, "sdk", f));
 
-// Extension
+// Extension: one build, then a copy per browser with its own manifest.
+//   dist/          Chrome, Edge, Brave, Opera (service worker)
+//   dist-firefox/  Firefox (background script, add-on ID, data-collection declaration)
+//   dist-safari/   input for Apple's safari-web-extension-converter (see safari/README.md)
 const extOut = join(root, "extension/dist");
 rmSync(extOut, { recursive: true, force: true });
 mkdirSync(extOut, { recursive: true });
-cpSync(join(root, "extension/manifest.json"), join(extOut, "manifest.json"));
 cpSync(join(root, "extension/icons"), join(extOut, "icons"), { recursive: true });
 for (const f of ["popup.html", "popup.css", "options.html", "scan.html"]) cpSync(join(root, "extension/src", f), join(extOut, f));
 await build({
   ...common,
   entryPoints: ["popup.js", "options.js", "background.js", "scan.js"].map((f) => join(root, "extension/src", f)),
   outdir: extOut,
-  target: ["chrome116"],
+  target: ["chrome116", "firefox128", "safari17"],
   define: { __DEFAULT_SERVER__: JSON.stringify(server) },
 });
+
+const manifest = JSON.parse(readFileSync(join(root, "extension/manifest.json"), "utf8"));
+const writeManifest = (dir, m) => writeFileSync(join(dir, "manifest.json"), `${JSON.stringify(m, null, 2)}\n`);
+writeManifest(extOut, manifest);
+
+const { minimum_chrome_version, background, ...portable } = manifest;
+const firefoxOut = join(root, "extension/dist-firefox");
+rmSync(firefoxOut, { recursive: true, force: true });
+cpSync(extOut, firefoxOut, { recursive: true });
+writeManifest(firefoxOut, {
+  ...portable,
+  background: { scripts: [background.service_worker] },
+  // Chrome's default policy. Firefox's default adds upgrade-insecure-requests, which would turn the
+  // ws:// of a local test relay into wss:// (Settings only accept plain http for localhost).
+  content_security_policy: { extension_pages: "script-src 'self'; object-src 'self'" },
+  browser_specific_settings: {
+    gecko: {
+      id: "postern@dahp.io",
+      strict_min_version: "140.0", // first version with data_collection_permissions (also the current ESR)
+      data_collection_permissions: { required: ["none"] }, // Postern collects nothing
+    },
+    gecko_android: { strict_min_version: "142.0" },
+  },
+});
+
+const safariOut = join(root, "extension/dist-safari");
+rmSync(safariOut, { recursive: true, force: true });
+cpSync(extOut, safariOut, { recursive: true });
+writeManifest(safariOut, { ...portable, background });
 
 console.log(`\nBuilt with default server ${server}`);

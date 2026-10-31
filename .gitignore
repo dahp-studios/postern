@@ -7,3 +7,7 @@ relay/.wrangler/
 dist/
 selfhost/node_modules/
 packages/postern/dist/
+extension/dist-firefox/
+extension/dist-safari/
+safari/**/xcuserdata/
+safari/**/*.xcuserstate
