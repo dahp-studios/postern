@@ -1,0 +1,16 @@
+{
+  "name": "postern-relay",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted Postern relay: the same API and phone page as postern.dahp.io, on your own server.",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ws": "8.22.0"
+  }
+}

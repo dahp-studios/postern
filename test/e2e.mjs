@@ -128,6 +128,41 @@ await step("after the laptop cancels (close code 4001), the phone is told the se
   assert.equal((await post(laptop.sessionId, JSON.stringify(message))).status, 410);
 });
 
+await step("plain HTTP receiver: long polling gets the message (for devices without WebSocket)", async () => {
+  const laptop = await createReceiver();
+  const polling = fetch(`${server}/api/s/${laptop.sessionId}/wait`);
+  await new Promise((r) => setTimeout(r, 300));
+  const { message, code } = await sealItem({ ...laptop, item: { type: "password", text: "over-plain-http" } });
+  assert.equal((await post(laptop.sessionId, JSON.stringify(message))).status, 200);
+  const res = await polling;
+  assert.equal(res.status, 200);
+  const result = await laptop.open(await res.json());
+  assert.equal(result.item.text, "over-plain-http");
+  assert.equal(result.code, code);
+  assert.equal((await fetch(`${server}/api/s/${laptop.sessionId}/wait`)).status, 410);
+});
+
+await step("DELETE cancels: an open long poll ends and the phone is told", async () => {
+  const laptop = await createReceiver();
+  const polling = fetch(`${server}/api/s/${laptop.sessionId}/wait`);
+  await new Promise((r) => setTimeout(r, 300));
+  assert.equal((await fetch(`${server}/api/s/${laptop.sessionId}`, { method: "DELETE" })).status, 200);
+  assert.equal((await polling).status, 410);
+  const { message } = await sealItem({ ...laptop, item: { type: "text", text: "x" } });
+  assert.equal((await post(laptop.sessionId, JSON.stringify(message))).status, 410);
+});
+
+await step("other websites may call the API (CORS, no credentials)", async () => {
+  const id = (await createReceiver()).sessionId;
+  const pre = await fetch(`${server}/api/s/${id}`, { method: "OPTIONS", headers: { Origin: "https://example.com", "Access-Control-Request-Method": "DELETE" } });
+  assert.equal(pre.status, 204);
+  assert.equal(pre.headers.get("access-control-allow-origin"), "*");
+  assert.match(pre.headers.get("access-control-allow-methods") ?? "", /DELETE/);
+  const res = await fetch(`${server}/api/s/${id}`, { method: "DELETE", headers: { Origin: "https://example.com" } });
+  assert.equal(res.headers.get("access-control-allow-origin"), "*");
+  assert.equal(res.headers.get("access-control-allow-credentials"), null);
+});
+
 await step("bad input is rejected", async () => {
   const laptop = await createReceiver();
   assert.equal((await post("short", "{}")).status, 404);
