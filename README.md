@@ -157,7 +157,7 @@ brew install cloudflared
 cloudflared tunnel --url http://localhost:8787    # prints https://<random>.trycloudflare.com
 ```
 
-Put that URL in the extension's **Settings** (or rebuild with `PT_SERVER=https://… npm run build`).
+Put that URL in the extension's **Settings**. Only development builds (`npm run build`) have that field; store builds are fixed to postern.dahp.io.
 
 ## Release
 
@@ -190,7 +190,20 @@ docker build -t postern-relay .
 docker run -p 8790:8790 postern-relay     # or: cd selfhost && npm ci && node server.mjs
 ```
 
-Put it behind HTTPS, then point the extension (Settings) or the npm package (`server`) at it. It
+Put it behind HTTPS, then point the npm package (`server` option) or the extension at it.
+
+The store versions of the extension always use `postern.dahp.io`; users can't change the server,
+so nobody can be talked into using someone else's. An organization's administrator sets its own
+relay by policy:
+
+- **Chrome / Edge (Google Admin console or device management):** extension policy for Postern,
+  `{"server": {"Value": "https://postern.example.com"}}`. Using registry or plist instead, the key is
+  `3rdparty/extensions/<extension id>/server`.
+- **Firefox (`policies.json`):**
+  `{"policies": {"3rdparty": {"Extensions": {"postern@dahp.io": {"server": "https://postern.example.com"}}}}}`
+
+Development builds (`npm run build`) also accept a server in Settings, for testing with a tunnel or
+a local relay. It
 passes the same end-to-end tests as the Cloudflare relay. Settings: `PORT`, `RATE_LIMIT`,
 `TRUST_PROXY`, `PUBLIC_DIR` (see `selfhost/server.mjs`).
 

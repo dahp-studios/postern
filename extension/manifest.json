@@ -18,13 +18,26 @@
       "32": "icons/icon32.png"
     }
   },
-  "background": { "service_worker": "background.js" },
+  "background": {
+    "service_worker": "background.js"
+  },
   "options_page": "options.html",
   "homepage_url": "https://postern.dahp.io/",
-  "permissions": ["activeTab", "alarms", "contextMenus", "scripting", "storage"],
+  "permissions": [
+    "activeTab",
+    "alarms",
+    "contextMenus",
+    "scripting",
+    "storage"
+  ],
+  "storage": {
+    "managed_schema": "managed_schema.json"
+  },
   "commands": {
     "_execute_action": {
-      "suggested_key": { "default": "Alt+Shift+P" },
+      "suggested_key": {
+        "default": "Alt+Shift+P"
+      },
       "description": "Receive from phone"
     }
   }

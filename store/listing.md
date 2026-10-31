@@ -42,7 +42,7 @@ Receive a password, text, link or file sent from the user's own phone, end-to-en
 | activeTab | Fill the received password or text into the field the user selected, only on the tab where they opened Postern. |
 | scripting | Insert the value into the focused field (and check that a field is focused) on that tab. Runs only when the user acts. |
 | contextMenus | The "Postern: receive from phone" entry when right-clicking a field. |
-| storage | Save the server setting; hold the current one-time session in memory-only session storage so the popup can close and reopen. |
+| storage | Hold the current one-time session in memory-only session storage so the popup can close and reopen, and read an organization's relay address from managed policy (for companies that self-host). |
 | alarms | Delete the one-time key and anything received when the session expires (2–5 minutes). |
 
 No host permissions. No remote code: everything is bundled in the package.
