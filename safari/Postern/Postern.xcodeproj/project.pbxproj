@@ -1,0 +1,637 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		570795B33095E8140011C16B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570795B23095E8140011C16B /* AppDelegate.swift */; };
+		570795B73095E8140011C16B /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 570795B53095E8140011C16B /* Main.html */; };
+		570795B93095E8140011C16B /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 570795B83095E8140011C16B /* Icon.png */; };
+		570795BB3095E8140011C16B /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 570795BA3095E8140011C16B /* Style.css */; };
+		570795BD3095E8140011C16B /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 570795BC3095E8140011C16B /* Script.js */; };
+		570795BF3095E8140011C16B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570795BE3095E8140011C16B /* ViewController.swift */; };
+		570795C23095E8150011C16B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 570795C03095E8150011C16B /* Main.storyboard */; };
+		570795C43095E8160011C16B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 570795C33095E8160011C16B /* Assets.xcassets */; };
+		570795CB3095E8170011C16B /* Postern Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 570795CA3095E8170011C16B /* Postern Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		570795D03095E8170011C16B /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570795CF3095E8170011C16B /* SafariWebExtensionHandler.swift */; };
+		570795E63095E8180011C16B /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 570795DC3095E8180011C16B /* popup.js */; };
+		570795E73095E8180011C16B /* scan.html in Resources */ = {isa = PBXBuildFile; fileRef = 570795DD3095E8180011C16B /* scan.html */; };
+		570795E83095E8180011C16B /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 570795DE3095E8180011C16B /* background.js */; };
+		570795E93095E8180011C16B /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 570795DF3095E8180011C16B /* popup.html */; };
+		570795EA3095E8180011C16B /* options.js in Resources */ = {isa = PBXBuildFile; fileRef = 570795E03095E8180011C16B /* options.js */; };
+		570795EB3095E8180011C16B /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 570795E13095E8180011C16B /* icons */; };
+		570795EC3095E8180011C16B /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 570795E23095E8180011C16B /* manifest.json */; };
+		570795ED3095E8180011C16B /* options.html in Resources */ = {isa = PBXBuildFile; fileRef = 570795E33095E8180011C16B /* options.html */; };
+		570795EE3095E8180011C16B /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = 570795E43095E8180011C16B /* popup.css */; };
+		570795EF3095E8180011C16B /* scan.js in Resources */ = {isa = PBXBuildFile; fileRef = 570795E53095E8180011C16B /* scan.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		570795CC3095E8170011C16B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 570795A73095E8140011C16B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 570795C93095E8170011C16B;
+			remoteInfo = "Postern Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		570795D73095E8170011C16B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				570795CB3095E8170011C16B /* Postern Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		570795AF3095E8140011C16B /* Postern.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Postern.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		570795B23095E8140011C16B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		570795B63095E8140011C16B /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		570795B83095E8140011C16B /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		570795BA3095E8140011C16B /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		570795BC3095E8140011C16B /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		570795BE3095E8140011C16B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		570795C13095E8150011C16B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		570795C33095E8160011C16B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		570795C53095E8160011C16B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		570795CA3095E8170011C16B /* Postern Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Postern Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		570795CF3095E8170011C16B /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		570795D13095E8170011C16B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		570795DC3095E8180011C16B /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = "../../../extension/dist-safari/popup.js"; sourceTree = "<group>"; };
+		570795DD3095E8180011C16B /* scan.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = scan.html; path = "../../../extension/dist-safari/scan.html"; sourceTree = "<group>"; };
+		570795DE3095E8180011C16B /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = "../../../extension/dist-safari/background.js"; sourceTree = "<group>"; };
+		570795DF3095E8180011C16B /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = "../../../extension/dist-safari/popup.html"; sourceTree = "<group>"; };
+		570795E03095E8180011C16B /* options.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = options.js; path = "../../../extension/dist-safari/options.js"; sourceTree = "<group>"; };
+		570795E13095E8180011C16B /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = "../../../extension/dist-safari/icons"; sourceTree = "<group>"; };
+		570795E23095E8180011C16B /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = "../../../extension/dist-safari/manifest.json"; sourceTree = "<group>"; };
+		570795E33095E8180011C16B /* options.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = options.html; path = "../../../extension/dist-safari/options.html"; sourceTree = "<group>"; };
+		570795E43095E8180011C16B /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = popup.css; path = "../../../extension/dist-safari/popup.css"; sourceTree = "<group>"; };
+		570795E53095E8180011C16B /* scan.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = scan.js; path = "../../../extension/dist-safari/scan.js"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		570795AC3095E8140011C16B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		570795C73095E8170011C16B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		570795A63095E8140011C16B = {
+			isa = PBXGroup;
+			children = (
+				570795B13095E8140011C16B /* Postern */,
+				570795CE3095E8170011C16B /* Postern Extension */,
+				570795B03095E8140011C16B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		570795B03095E8140011C16B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				570795AF3095E8140011C16B /* Postern.app */,
+				570795CA3095E8170011C16B /* Postern Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		570795B13095E8140011C16B /* Postern */ = {
+			isa = PBXGroup;
+			children = (
+				570795B23095E8140011C16B /* AppDelegate.swift */,
+				570795BE3095E8140011C16B /* ViewController.swift */,
+				570795C03095E8150011C16B /* Main.storyboard */,
+				570795C33095E8160011C16B /* Assets.xcassets */,
+				570795C53095E8160011C16B /* Info.plist */,
+				570795B43095E8140011C16B /* Resources */,
+			);
+			path = Postern;
+			sourceTree = "<group>";
+		};
+		570795B43095E8140011C16B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				570795B53095E8140011C16B /* Main.html */,
+				570795B83095E8140011C16B /* Icon.png */,
+				570795BA3095E8140011C16B /* Style.css */,
+				570795BC3095E8140011C16B /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		570795CE3095E8170011C16B /* Postern Extension */ = {
+			isa = PBXGroup;
+			children = (
+				570795DB3095E8180011C16B /* Resources */,
+				570795CF3095E8170011C16B /* SafariWebExtensionHandler.swift */,
+				570795D13095E8170011C16B /* Info.plist */,
+			);
+			path = "Postern Extension";
+			sourceTree = "<group>";
+		};
+		570795DB3095E8180011C16B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				570795DC3095E8180011C16B /* popup.js */,
+				570795DD3095E8180011C16B /* scan.html */,
+				570795DE3095E8180011C16B /* background.js */,
+				570795DF3095E8180011C16B /* popup.html */,
+				570795E03095E8180011C16B /* options.js */,
+				570795E13095E8180011C16B /* icons */,
+				570795E23095E8180011C16B /* manifest.json */,
+				570795E33095E8180011C16B /* options.html */,
+				570795E43095E8180011C16B /* popup.css */,
+				570795E53095E8180011C16B /* scan.js */,
+			);
+			name = Resources;
+			path = "Postern Extension";
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		570795AE3095E8140011C16B /* Postern */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 570795D83095E8170011C16B /* Build configuration list for PBXNativeTarget "Postern" */;
+			buildPhases = (
+				570795AB3095E8140011C16B /* Sources */,
+				570795AC3095E8140011C16B /* Frameworks */,
+				570795AD3095E8140011C16B /* Resources */,
+				570795D73095E8170011C16B /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				570795CD3095E8170011C16B /* PBXTargetDependency */,
+			);
+			name = Postern;
+			packageProductDependencies = (
+			);
+			productName = Postern;
+			productReference = 570795AF3095E8140011C16B /* Postern.app */;
+			productType = "com.apple.product-type.application";
+		};
+		570795C93095E8170011C16B /* Postern Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 570795D43095E8170011C16B /* Build configuration list for PBXNativeTarget "Postern Extension" */;
+			buildPhases = (
+				570795C63095E8170011C16B /* Sources */,
+				570795C73095E8170011C16B /* Frameworks */,
+				570795C83095E8170011C16B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Postern Extension";
+			packageProductDependencies = (
+			);
+			productName = "Postern Extension";
+			productReference = 570795CA3095E8170011C16B /* Postern Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		570795A73095E8140011C16B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					570795AE3095E8140011C16B = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					570795C93095E8170011C16B = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
+			};
+			buildConfigurationList = 570795AA3095E8140011C16B /* Build configuration list for PBXProject "Postern" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 570795A63095E8140011C16B;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 570795B03095E8140011C16B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				570795AE3095E8140011C16B /* Postern */,
+				570795C93095E8170011C16B /* Postern Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		570795AD3095E8140011C16B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				570795B93095E8140011C16B /* Icon.png in Resources */,
+				570795C23095E8150011C16B /* Main.storyboard in Resources */,
+				570795BD3095E8140011C16B /* Script.js in Resources */,
+				570795B73095E8140011C16B /* Main.html in Resources */,
+				570795C43095E8160011C16B /* Assets.xcassets in Resources */,
+				570795BB3095E8140011C16B /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		570795C83095E8170011C16B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				570795E63095E8180011C16B /* popup.js in Resources */,
+				570795EC3095E8180011C16B /* manifest.json in Resources */,
+				570795E93095E8180011C16B /* popup.html in Resources */,
+				570795ED3095E8180011C16B /* options.html in Resources */,
+				570795E83095E8180011C16B /* background.js in Resources */,
+				570795EE3095E8180011C16B /* popup.css in Resources */,
+				570795EB3095E8180011C16B /* icons in Resources */,
+				570795E73095E8180011C16B /* scan.html in Resources */,
+				570795EA3095E8180011C16B /* options.js in Resources */,
+				570795EF3095E8180011C16B /* scan.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		570795AB3095E8140011C16B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				570795BF3095E8140011C16B /* ViewController.swift in Sources */,
+				570795B33095E8140011C16B /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		570795C63095E8170011C16B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				570795D03095E8170011C16B /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		570795CD3095E8170011C16B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 570795C93095E8170011C16B /* Postern Extension */;
+			targetProxy = 570795CC3095E8170011C16B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		570795B53095E8140011C16B /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				570795B63095E8140011C16B /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		570795C03095E8150011C16B /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				570795C13095E8150011C16B /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		570795D23095E8170011C16B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		570795D33095E8170011C16B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		570795D53095E8170011C16B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XTKXXS72FR;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Postern Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Postern Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		570795D63095E8170011C16B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XTKXXS72FR;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Postern Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Postern Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		570795D93095E8170011C16B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XTKXXS72FR;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Postern/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Postern;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		570795DA3095E8170011C16B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XTKXXS72FR;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Postern/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Postern;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		570795AA3095E8140011C16B /* Build configuration list for PBXProject "Postern" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				570795D23095E8170011C16B /* Debug */,
+				570795D33095E8170011C16B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		570795D43095E8170011C16B /* Build configuration list for PBXNativeTarget "Postern Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				570795D53095E8170011C16B /* Debug */,
+				570795D63095E8170011C16B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		570795D83095E8170011C16B /* Build configuration list for PBXNativeTarget "Postern" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				570795D93095E8170011C16B /* Debug */,
+				570795DA3095E8170011C16B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 570795A73095E8140011C16B /* Project object */;
+}
