@@ -65,7 +65,7 @@ for (const f of ["index.d.ts", "ui.d.ts", "scanner.d.ts"]) cpSync(join(sdkDir, "
 
 // Web pages
 const phoneOut = join(root, "relay/public");
-const PAGES = ["index.html", "privacy.html", "receive.html", "developers.html"];
+const PAGES = ["index.html", "privacy.html", "terms.html", "receive.html", "developers.html"];
 const PHONE_STATIC = [
   ...PAGES, "style.css", "favicon.svg", "_headers",
   "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable-512.png",
