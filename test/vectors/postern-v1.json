@@ -1,0 +1,79 @@
+{
+  "description": "Postern protocol v1 test vectors. Derive the receiver key pair from ikmR and each ephemeral key pair from ikmE with DHKEM(X25519, HKDF-SHA256) DeriveKeyPair (RFC 9180 section 7.1.3); sealing each item must give exactly `message`, and opening it must give the item and `code`.",
+  "suite": {
+    "mode": "base",
+    "kem": "DHKEM(X25519, HKDF-SHA256) 0x0020",
+    "kdf": "HKDF-SHA256 0x0001",
+    "aead": "AES-256-GCM 0x0002"
+  },
+  "info": "dahp postern v1",
+  "ikmR": "70707577697774277a6e6d7075837381307c778c34887b7c7c89898e9082908d",
+  "receiver": {
+    "sessionId": "AAECAwQFBgcICQoLDA0ODw",
+    "publicKey": "NcTX5zWTkW2ZZFxkbqbLyq7DJ2jVNxnJ31PK1c76DHk",
+    "privateKey": "gc7RmUkTSnxQhm3tggLBYEbG7NyBX_IPnn8O4pe1sG4"
+  },
+  "link": "https://postern.dahp.io/#v=1&id=AAECAwQFBgcICQoLDA0ODw&k=NcTX5zWTkW2ZZFxkbqbLyq7DJ2jVNxnJ31PK1c76DHk",
+  "link_with_types": "https://postern.dahp.io/#v=1&id=AAECAwQFBgcICQoLDA0ODw&k=NcTX5zWTkW2ZZFxkbqbLyq7DJ2jVNxnJ31PK1c76DHk&t=password%2Ctext",
+  "aad": "v1:AAECAwQFBgcICQoLDA0ODw",
+  "cases": [
+    {
+      "item": {
+        "type": "password",
+        "text": "correct horse battery staple"
+      },
+      "ikmE": "70707577697774276d797270797280707c3185787979364788888d8f818f8c3f",
+      "message": {
+        "v": 1,
+        "enc": "xqJx9EPQ7IKxdofdXirfHcM-hyYa2pFLN8duhppBAhc",
+        "ct": "QU-wauogrYYIc4IW6kzNrDhQtA8Uo-6QxMx2hObuc4O6rririTvpGUhyWfXEhVq2XW8QYhsXqrnB_2echLnUSBUvBlluRMa1Om7YIqU_YtxiPmzr1KLL8P_ycuV51hPKjoYzw4jIc5zp6WttuGML_1OaezTUkfY0Dp6eLamKTFr1wXHDFaSxyXbfWzTWHs-w"
+      },
+      "code": "6193",
+      "offline_payload": "PT1.AAECAwQFBgcICQoLDA0ODw.xqJx9EPQ7IKxdofdXirfHcM-hyYa2pFLN8duhppBAhc.QU-wauogrYYIc4IW6kzNrDhQtA8Uo-6QxMx2hObuc4O6rririTvpGUhyWfXEhVq2XW8QYhsXqrnB_2echLnUSBUvBlluRMa1Om7YIqU_YtxiPmzr1KLL8P_ycuV51hPKjoYzw4jIc5zp6WttuGML_1OaezTUkfY0Dp6eLamKTFr1wXHDFaSxyXbfWzTWHs-w"
+    },
+    {
+      "item": {
+        "type": "text",
+        "text": "user-42@example.com"
+      },
+      "ikmE": "70707577697774276d797270797280707c3185787979364888888d8f818f8c3f",
+      "message": {
+        "v": 1,
+        "enc": "pEZLhPMzaDhlrN2MRkmYmXmwn6-30NXXkhRievqgbVw",
+        "ct": "mZ560y6KHefFTsVBn0XpXDXMKP8YereH2guaybf2joODaEoFyKo0lWzP_w49mlHqWs2FgPQLTNF0iylt8-uhxstSIx4S4whkh5KGO6N6LuRumWBbAeWOP0o9iz8bEL3xEeTECyh_y3NrSPhDd_a8XWCFh3AY_EBBcGmRmExgF_ySkL99_rO3HwBuqAv2qBxl"
+      },
+      "code": "2641",
+      "offline_payload": "PT1.AAECAwQFBgcICQoLDA0ODw.pEZLhPMzaDhlrN2MRkmYmXmwn6-30NXXkhRievqgbVw.mZ560y6KHefFTsVBn0XpXDXMKP8YereH2guaybf2joODaEoFyKo0lWzP_w49mlHqWs2FgPQLTNF0iylt8-uhxstSIx4S4whkh5KGO6N6LuRumWBbAeWOP0o9iz8bEL3xEeTECyh_y3NrSPhDd_a8XWCFh3AY_EBBcGmRmExgF_ySkL99_rO3HwBuqAv2qBxl"
+    },
+    {
+      "item": {
+        "type": "url",
+        "text": "https://example.com/reset?token=abc"
+      },
+      "ikmE": "70707577697774276d797270797280707c3185787979364988888d8f818f8c3f",
+      "message": {
+        "v": 1,
+        "enc": "r2mkhdKK3gYgpQlhJhvf8H4ZSSFFoo_3HEq23JWTrw8",
+        "ct": "3n5HP1K1nzgnSdMU92bKTHrjoaLnGRvxAWsUU7qWcHjy0wTt7eyc40Jagu_Ctwh51lxZONxqZgxXFTiO5UXgKKmwTkNg1NxhrK3V6F8-bm2bbHeo0DcR2CcQjsafr_Af7gJzeQGgjmx_lMdM6ph4U-msJZolOZsHH1Dhr5fYS6Sjc1Q8N8Wmvi3hMHo99kY2"
+      },
+      "code": "7710",
+      "offline_payload": "PT1.AAECAwQFBgcICQoLDA0ODw.r2mkhdKK3gYgpQlhJhvf8H4ZSSFFoo_3HEq23JWTrw8.3n5HP1K1nzgnSdMU92bKTHrjoaLnGRvxAWsUU7qWcHjy0wTt7eyc40Jagu_Ctwh51lxZONxqZgxXFTiO5UXgKKmwTkNg1NxhrK3V6F8-bm2bbHeo0DcR2CcQjsafr_Af7gJzeQGgjmx_lMdM6ph4U-msJZolOZsHH1Dhr5fYS6Sjc1Q8N8Wmvi3hMHo99kY2"
+    },
+    {
+      "item": {
+        "type": "file",
+        "name": "config.json",
+        "mime": "application/json",
+        "bytes_hex": "7b226170694b6579223a226b2d313233227d"
+      },
+      "ikmE": "70707577697774276d797270797280707c3185787979364a88888d8f818f8c3f",
+      "message": {
+        "v": 1,
+        "enc": "ulk5uZi7_d-rBMT5zG35j7MR7CjUgsBULcb0m4uezCY",
+        "ct": "A3KA9dk2tkUjTgD4625Kjzgrx7hc3IpFmIaYTNKa5ZvSE8T24UMt0VVd2oICjgdZXZ4CcCCN--mzsOjJrSYT9yDkbD_Gd1MQF2IcY9afG0LdsELhvCU8-ONQIrzThHCfDDUbDqcJJ_UTcNRrLMwu7DTQVIAwBm84L6ZvpafZ0KlIfIHZdivp3QRjM1BwNpPj"
+      },
+      "code": "8766",
+      "offline_payload": "PT1.AAECAwQFBgcICQoLDA0ODw.ulk5uZi7_d-rBMT5zG35j7MR7CjUgsBULcb0m4uezCY.A3KA9dk2tkUjTgD4625Kjzgrx7hc3IpFmIaYTNKa5ZvSE8T24UMt0VVd2oICjgdZXZ4CcCCN--mzsOjJrSYT9yDkbD_Gd1MQF2IcY9afG0LdsELhvCU8-ONQIrzThHCfDDUbDqcJJ_UTcNRrLMwu7DTQVIAwBm84L6ZvpafZ0KlIfIHZdivp3QRjM1BwNpPj"
+    }
+  ]
+}

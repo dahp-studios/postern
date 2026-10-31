@@ -33,13 +33,13 @@ function formatSize(bytes) {
   return bytes < 1024 ? `${bytes} bytes` : `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0)} KB`;
 }
 
-function selectType(next) {
+function selectType(next, { focus = true } = {}) {
   type = next;
   for (const tab of tabs) tab.setAttribute("aria-selected", String(tab.dataset.type === next));
   for (const pane of panes) pane.hidden = pane.dataset.pane !== next;
   $("error").hidden = true;
   const focusTarget = { password: "password", text: "text", url: "url" }[next];
-  if (focusTarget) $(focusTarget).focus();
+  if (focusTarget && focus) $(focusTarget).focus();
 }
 
 async function readItem() {
@@ -62,6 +62,10 @@ function sentence(message) {
 
 function useSession(next) {
   session = next;
+  // Offer only what the receiver accepts (a password field may take just passwords and text).
+  for (const tab of tabs) tab.hidden = !next.types.includes(tab.dataset.type);
+  document.querySelector(".types").hidden = next.types.length === 1;
+  selectType(next.types.includes(type) ? type : next.types[0], { focus: false });
   showOnly("send");
 }
 

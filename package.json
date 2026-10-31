@@ -13,7 +13,9 @@
     "build:release": "PT_SERVER=https://postern.dahp.io node scripts/build.mjs",
     "package": "npm run build:release && node scripts/package.mjs",
     "deploy": "npm run build:release && cd relay && wrangler deploy",
-    "verify": "node test/verify.mjs"
+    "verify": "node test/verify.mjs",
+    "vectors": "node scripts/make-vectors.mjs",
+    "sdk:pack": "node scripts/build.mjs && cd packages/postern && npm pack --pack-destination ../../dist"
   },
   "dependencies": {
     "@hpke/core": "1.9.0",
@@ -24,5 +26,6 @@
   "devDependencies": {
     "esbuild": "0.28.2",
     "wrangler": "4.148.0"
-  }
+  },
+  "license": "Apache-2.0"
 }

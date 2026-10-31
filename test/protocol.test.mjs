@@ -139,8 +139,14 @@ test("link build and parse", async () => {
   const link = buildLink("https://postern.example.com/", rx);
   const url = new URL(link);
   assert.equal(url.pathname, "/");
-  assert.deepEqual(parseLinkFragment(url.hash), { sessionId: rx.sessionId, publicKey: rx.publicKey });
+  assert.deepEqual(parseLinkFragment(url.hash), { sessionId: rx.sessionId, publicKey: rx.publicKey, types: ["password", "text", "url", "file"] });
   assert.equal(parseLinkFragment("#v=2&id=x&k=y"), null);
+
+  // A receiver can limit what the phone offers; unknown types are ignored.
+  const limited = new URL(buildLink("https://postern.example.com", rx, { types: ["password", "text", "bogus"] }));
+  assert.match(limited.hash, /&t=password%2Ctext$/);
+  assert.deepEqual(parseLinkFragment(limited.hash).types, ["password", "text"]);
+  assert.deepEqual(parseLinkFragment(`${url.hash}&t=bogus`).types, ["password", "text", "url", "file"]);
   assert.equal(parseLinkFragment(""), null);
 });
 

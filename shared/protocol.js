@@ -196,14 +196,18 @@ export async function createReceiver(saved) {
   };
 }
 
-/** Phone side: encrypt one item to the laptop's public key. */
-export async function sealItem({ sessionId, publicKey, item }) {
+/**
+ * Phone side: encrypt one item to the laptop's public key.
+ * `testEphemeralSeed` fixes the ephemeral key, only to generate the published test vectors; never use it otherwise.
+ */
+export async function sealItem({ sessionId, publicKey, item, testEphemeralSeed }) {
   if (!isValidSessionId(sessionId)) throw new Error("Invalid session");
   if (typeof publicKey !== "string" || !PUBLIC_KEY_RE.test(publicKey)) throw new Error("Invalid key");
   const clean = validateItem(item);
 
   const recipientPublicKey = await suite.kem.deserializePublicKey(fromBase64Url(publicKey));
-  const sender = await suite.createSenderContext({ recipientPublicKey, info: INFO });
+  const ekm = testEphemeralSeed ? await suite.kem.deriveKeyPair(testEphemeralSeed) : undefined;
+  const sender = await suite.createSenderContext({ recipientPublicKey, info: INFO, ...(ekm && { ekm }) });
   const ct = await sender.seal(encodePlaintext(clean), aadFor(sessionId));
   return {
     message: { v: PROTOCOL_VERSION, enc: toBase64Url(sender.enc), ct: toBase64Url(ct) },
@@ -211,19 +215,26 @@ export async function sealItem({ sessionId, publicKey, item }) {
   };
 }
 
-/** Link encoded in the QR. Everything after "#" stays on the device; browsers never send it to the server. */
-export function buildLink(baseUrl, { sessionId, publicKey }) {
+/**
+ * Link encoded in the QR. Everything after "#" stays on the device; browsers never send it to the server.
+ * `types` optionally limits what the phone offers (for example ["password", "text"] for a password field).
+ */
+export function buildLink(baseUrl, { sessionId, publicKey }, { types } = {}) {
   const params = new URLSearchParams({ v: String(PROTOCOL_VERSION), id: sessionId, k: publicKey });
+  const offered = (types ?? []).filter((t) => ITEM_TYPES.includes(t));
+  if (offered.length && offered.length < ITEM_TYPES.length) params.set("t", offered.join(","));
   return `${baseUrl.replace(/\/+$/, "")}/#${params}`;
 }
 
+/** Returns { sessionId, publicKey, types } (types: what the receiver accepts), or null. */
 export function parseLinkFragment(hash) {
   const params = new URLSearchParams(String(hash).replace(/^#/, ""));
   const sessionId = params.get("id");
   const publicKey = params.get("k");
   if (params.get("v") !== String(PROTOCOL_VERSION)) return null;
   if (!isValidSessionId(sessionId) || !publicKey || !PUBLIC_KEY_RE.test(publicKey)) return null;
-  return { sessionId, publicKey };
+  const asked = (params.get("t") ?? "").split(",").filter((t) => ITEM_TYPES.includes(t));
+  return { sessionId, publicKey, types: asked.length ? asked : [...ITEM_TYPES] };
 }
 
 // Offline mode: with no internet, the phone shows its sealed message as a QR code and the

@@ -2,7 +2,8 @@
 //   PT_SERVER=https://... npm run test:e2e   to test a deployed relay.
 
 import assert from "node:assert/strict";
-import { createReceiver, sealItem, buildLink, parseLinkFragment } from "../shared/protocol.js";
+import { createReceiver, sealItem, buildLink, parseLinkFragment, encodeOfflinePayload } from "../shared/protocol.js";
+import { receive } from "../packages/postern/src/index.js";
 
 const server = (process.env.PT_SERVER || "http://localhost:8787").replace(/\/+$/, "");
 const wsBase = server.replace(/^http/, "ws");
@@ -161,6 +162,46 @@ await step("other websites may call the API (CORS, no credentials)", async () =>
   const res = await fetch(`${server}/api/s/${id}`, { method: "DELETE", headers: { Origin: "https://example.com" } });
   assert.equal(res.headers.get("access-control-allow-origin"), "*");
   assert.equal(res.headers.get("access-control-allow-credentials"), null);
+});
+
+// The npm package (@dahp/postern) as a website, TV app or Node program would use it.
+async function phoneSends(link, item) {
+  const session = parseLinkFragment(new URL(link).hash);
+  const sealed = await sealItem({ ...session, item });
+  const res = await post(session.sessionId, JSON.stringify(sealed.message));
+  return { ...sealed, status: res.status, session };
+}
+
+for (const transport of ["websocket", "poll"]) {
+  await step(`npm package receive() over ${transport === "poll" ? "plain HTTP" : "WebSocket"}`, async () => {
+    const statuses = [];
+    const session = await receive({ server, transport, types: ["password", "text"], onStatus: (s) => statuses.push(s) });
+    assert.match(session.link, /#v=1&id=.+&k=.+&t=password%2Ctext$/);
+    await new Promise((r) => setTimeout(r, 500));
+    const sent = await phoneSends(session.link, { type: "password", text: `via-${transport}` });
+    assert.equal(sent.status, 200);
+    const { item, code } = await session.result;
+    assert.equal(item.text, `via-${transport}`);
+    assert.equal(code, sent.code);
+    assert.ok(statuses.includes("waiting"), `statuses: ${statuses}`);
+  });
+}
+
+await step("npm package: cancel tells the phone, offline QR is accepted", async () => {
+  const a = await receive({ server, transport: "poll" });
+  await new Promise((r) => setTimeout(r, 300));
+  a.cancel();
+  await assert.rejects(a.result, (err) => err.code === "cancelled");
+  await new Promise((r) => setTimeout(r, 300));
+  assert.equal((await phoneSends(a.link, { type: "text", text: "late" })).status, 410);
+
+  const b = await receive({ server });
+  const s = parseLinkFragment(new URL(b.link).hash);
+  const sealed = await sealItem({ ...s, item: { type: "text", text: "from the phone's screen" } });
+  const { item, code } = await b.acceptOffline(encodeOfflinePayload(s.sessionId, sealed.message));
+  assert.equal(item.text, "from the phone's screen");
+  assert.equal(code, sealed.code);
+  await assert.rejects(b.acceptOffline("PT1.nope"), (err) => err.code === "wrong_session");
 });
 
 await step("bad input is rejected", async () => {
