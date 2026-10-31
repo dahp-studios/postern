@@ -119,6 +119,10 @@ QR holds `https://postern.dahp.io/#v=1&id=<session>&k=<public key>`; the phone p
 `{"v":1,"enc","ct"}` to `/api/s/<session>`; the receiver waits on a WebSocket or polls
 `/api/s/<session>/wait`.
 
+## Terms
+
+Using the public relay at postern.dahp.io is subject to the [Terms of Use](https://postern.dahp.io/terms). If you add Postern to your product, you're responsible for your integration and your own users (section 5). The dialog links to the Terms of whichever relay it uses.
+
 ## License
 
 Apache-2.0. © 2026 DAHP Tech LLC.

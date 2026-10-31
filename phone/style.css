@@ -150,6 +150,8 @@ video {
   image-rendering: pixelated;
 }
 .footer { margin: 1.5rem 0 0; font-size: 0.8rem; text-align: center; }
+.agree { margin: 0.75rem 0 0; font-size: 0.8rem; text-align: center; color: var(--muted); }
+.agree a { color: inherit; }
 .footer a { color: var(--muted); }
 .doc h2 { font-size: 1.05rem; margin: 1.5rem 0 0.25rem; }
 .doc p:not(.brand):not(.hint), .doc li { color: var(--text); }

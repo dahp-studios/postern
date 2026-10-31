@@ -1,8 +1,19 @@
 {
   "name": "@dahp/postern",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Let people send a password, text, link or file from their phone to your page or app by scanning a QR code. End-to-end encrypted (HPKE, RFC 9180).",
-  "keywords": ["qr", "qr-code", "password", "phone", "transfer", "end-to-end-encryption", "hpke", "smart-tv", "autofill", "web-component"],
+  "keywords": [
+    "qr",
+    "qr-code",
+    "password",
+    "phone",
+    "transfer",
+    "end-to-end-encryption",
+    "hpke",
+    "smart-tv",
+    "autofill",
+    "web-component"
+  ],
   "homepage": "https://postern.dahp.io/developers",
   "license": "Apache-2.0",
   "author": "DAHP Tech LLC <info@dahp.io>",
@@ -10,17 +21,37 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./ui": { "types": "./dist/ui.d.ts", "default": "./dist/ui.js" },
-    "./scanner": { "types": "./dist/scanner.d.ts", "default": "./dist/scanner.js" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./ui": {
+      "types": "./dist/ui.d.ts",
+      "default": "./dist/ui.js"
+    },
+    "./scanner": {
+      "types": "./dist/scanner.d.ts",
+      "default": "./dist/scanner.js"
+    },
     "./global": "./dist/postern.global.js",
     "./package.json": "./package.json"
   },
   "jsdelivr": "./dist/postern.global.js",
   "unpkg": "./dist/postern.global.js",
-  "files": ["dist", "README.md", "LICENSE", "NOTICE"],
-  "sideEffects": ["./dist/ui.js", "./dist/postern.global.js", "./dist/postern-scanner.global.js"],
-  "engines": { "node": ">=20" },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "sideEffects": [
+    "./dist/ui.js",
+    "./dist/postern.global.js",
+    "./dist/postern-scanner.global.js"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@hpke/core": "1.9.0",
     "@hpke/dhkem-x25519": "1.8.0",

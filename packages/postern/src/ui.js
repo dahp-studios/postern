@@ -50,6 +50,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .link { border: 0; background: none; color: var(--accent); padding: 4px; font-size: 13px; text-decoration: underline; justify-self: center; }
 video { width: 100%; border-radius: 10px; background: #000; transform: scaleX(-1); }
 footer { text-align: center; color: var(--muted); font-size: 12px; }
+footer a { color: inherit; }
 `;
 
 const TEMPLATE = `
@@ -78,7 +79,7 @@ const TEMPLATE = `
       <p class="message-text"></p>
       <button class="primary retry" type="button">New QR code</button>
     </section>
-    <footer>Postern · end-to-end encrypted</footer>
+    <footer>Postern · end-to-end encrypted · <a class="terms" target="_blank" rel="noopener">Terms</a></footer>
   </div>
 </div>`;
 
@@ -135,6 +136,7 @@ export function open({ server = DEFAULT_SERVER, types, title, scanner } = {}) {
   applyStyle(root, STYLE);
   const $ = (sel) => root.querySelector(sel);
   if (title) $("#title").textContent = title;
+  $(".terms").href = `${server.replace(/\/+$/, "")}/terms`; // the relay's Terms of Use
   const previousFocus = document.activeElement;
   document.body.append(host);
 
