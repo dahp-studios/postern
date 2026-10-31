@@ -52,10 +52,10 @@ How to test without a phone: click into a text field on any page, then click the
 Permissions:
 - activeTab and scripting: fill the received value into the focused field, only on the tab where the user opened Postern, only when they click Fill.
 - contextMenus: the "Postern: receive from phone" right-click entry.
-- storage: the current one-time session (storage.session, memory only), so the popup can close and reopen, and an organization's relay address from enterprise policy (storage.managed). Users can't change the server.
+- storage: the current one-time session (storage.session, memory only), so the popup can close and reopen. The server is fixed; nothing can change it.
 - alarms: delete the one-time key and anything received when the session expires.
 
-Network: the extension connects only to https://postern.dahp.io (or a relay an administrator sets by enterprise policy) over WebSocket. Messages are HPKE ciphertext; the relay can't decrypt them. No data collection (data_collection_permissions: none). No remote code: everything is bundled.
+Network: the extension connects only to https://postern.dahp.io, over WebSocket. The address is fixed in the build. Messages are HPKE ciphertext; the relay can't decrypt them. No data collection (data_collection_permissions: none). No remote code: everything is bundled.
 
 Source code: the package is bundled with esbuild from the attached source (no minification). To rebuild:
 1. Node.js 20 or later (tested with 25), npm 10 or later.

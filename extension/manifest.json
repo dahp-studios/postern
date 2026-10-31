@@ -30,9 +30,6 @@
     "scripting",
     "storage"
   ],
-  "storage": {
-    "managed_schema": "managed_schema.json"
-  },
   "commands": {
     "_execute_action": {
       "suggested_key": {

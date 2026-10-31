@@ -192,15 +192,11 @@ docker run -p 8790:8790 postern-relay     # or: cd selfhost && npm ci && node se
 
 Put it behind HTTPS, then point the npm package (`server` option) or the extension at it.
 
-The store versions of the extension always use `postern.dahp.io`; users can't change the server,
-so nobody can be talked into using someone else's. An organization's administrator sets its own
-relay by policy:
-
-- **Chrome / Edge (Google Admin console or device management):** extension policy for Postern,
-  `{"server": {"Value": "https://postern.example.com"}}`. Using registry or plist instead, the key is
-  `3rdparty/extensions/<extension id>/server`.
-- **Firefox (`policies.json`):**
-  `{"policies": {"3rdparty": {"Extensions": {"postern@dahp.io": {"server": "https://postern.example.com"}}}}}`
+The browser extension always uses `postern.dahp.io`. Nothing can change that: no setting, no
+policy, no stored value. So nobody can be talked into, or tricked into, using someone else's server.
+Self-hosting is for websites and apps, through the npm package's `server` option. An organization
+that wants an extension for its own relay builds one from this code with its own fixed server
+(`PT_SERVER=https://postern.example.com npm run build`) and publishes it under its own name.
 
 Development builds (`npm run build`) also accept a server in Settings, for testing with a tunnel or
 a local relay. It
