@@ -1,0 +1,8 @@
+node_modules
+selfhost/node_modules
+extension/dist
+relay/public
+relay/.wrangler
+dist
+*.log
+.git
