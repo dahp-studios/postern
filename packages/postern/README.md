@@ -110,11 +110,11 @@ The dialog needs no inline scripts or styles. Restyle it with `--postern-accent`
 ## Self-hosting
 
 The relay is open source and runs on your own server or as a Docker image; pass its address as
-`server`. See the repository's `selfhost/` folder.
+`server`. See [`selfhost/`](https://github.com/dahp-studios/postern/tree/main/selfhost) in the repository.
 
 ## Protocol
 
-The full specification and test vectors are in `docs/PROTOCOL.md` in the repository. In short: the
+The full specification and test vectors are in [`docs/PROTOCOL.md`](https://github.com/dahp-studios/postern/blob/main/docs/PROTOCOL.md). In short: the
 QR holds `https://postern.dahp.io/#v=1&id=<session>&k=<public key>`; the phone posts
 `{"v":1,"enc","ct"}` to `/api/s/<session>`; the receiver waits on a WebSocket or polls
 `/api/s/<session>/wait`.
