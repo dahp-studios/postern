@@ -1,6 +1,6 @@
 {
   "name": "postern",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "description": "Postern: a private gate from your phone to your browser. End-to-end encrypted transfer via a QR code.",
