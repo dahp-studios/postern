@@ -32,6 +32,9 @@ Easy:
 • Right-click a field, click the toolbar icon, or press Alt+Shift+P
 • No internet? The phone can show the encrypted message as a QR code for your webcam
 
+Terms of Use: https://postern.dahp.io/terms
+Privacy Policy: https://postern.dahp.io/privacy
+
 ## Single purpose
 Receive a password, text, link or file sent from the user's own phone, end-to-end encrypted, and fill it into the selected field, open it, copy it or save it.
 
