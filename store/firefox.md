@@ -33,11 +33,16 @@ Easy:
 - Right-click a field, click the toolbar icon, or press Alt+Shift+P
 - No internet? The phone can show the encrypted message as a QR code for your webcam
 
+Terms of Use: https://postern.dahp.io/terms
+Privacy Policy: https://postern.dahp.io/privacy
+
 **Categories:** Privacy & Security; Productivity (or the closest that AMO offers)
 
 **Support email:** info@dahp.io
 **Homepage / support site:** https://postern.dahp.io/
 **Privacy policy:** https://postern.dahp.io/privacy (paste its text if AMO asks for the policy itself)
+**Terms of Use:** https://postern.dahp.io/terms (AMO has an optional EULA field; leave it empty and add both links to the end of the description)
+**Compatibility:** Firefox for desktop only for now. Untick Firefox for Android: Android has no context menus API, so the add-on needs a small change before it can be offered there.
 **License:** Apache License 2.0
 **Screenshots:** `store/screenshots/1-scan.png`, `2-confirm.png`, `3-filled.png`
 
@@ -47,7 +52,7 @@ Paste this into "Notes to Reviewer":
 
 Postern receives a password, text, link or file that the user sends from their own phone, end-to-end encrypted, and fills it into the field they selected.
 
-How to test without a phone: click into a text field on any page, then click the toolbar icon. The popup shows a QR code; right-click the popup, choose Inspect, and run document.getElementById("qr").dataset.link in the console. Open that link in another browser or private window: it's the phone page. Type something, press Send, and the popup shows the same 4-digit code with Fill, Copy or Discard.
+How to test: open https://postern.dahp.io/developers (or any page with a text field), click into a field, then click the toolbar icon. The popup shows a QR code. Scan it with a phone camera, or decode a screenshot of it with any QR reader, and open the link (on a phone, or in another browser or private window): it's the phone page. Type something, press Send, and the popup shows the same 4-digit code as the phone, with Fill, Copy or Discard. No account is needed.
 
 Permissions:
 - activeTab and scripting: fill the received value into the focused field, only on the tab where the user opened Postern, only when they click Fill.
