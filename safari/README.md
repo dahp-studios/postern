@@ -21,7 +21,7 @@ open safari/Postern/Postern.xcodeproj
 
 ## Publish to the Mac App Store
 
-The owner does these steps in the browser and in Xcode (see `APPLE-ACCOUNT.md` in neon-breaker).
+The account owner does these steps in the browser and in Xcode.
 
 1. developer.apple.com → Identifiers → **+** → App IDs: `io.dahp.postern` and
    `io.dahp.postern.Extension`.

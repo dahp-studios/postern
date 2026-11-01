@@ -15,6 +15,12 @@
     "web-component"
   ],
   "homepage": "https://postern.dahp.io/developers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dahp-studios/postern.git",
+    "directory": "packages/postern"
+  },
+  "bugs": "https://github.com/dahp-studios/postern/issues",
   "license": "Apache-2.0",
   "author": "DAHP Tech LLC <info@dahp.io>",
   "type": "module",

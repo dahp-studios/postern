@@ -2,15 +2,20 @@
 
 A private gate from your phone to your browser.
 
+[Website](https://postern.dahp.io) · [For developers](https://postern.dahp.io/developers) ·
+[npm: `@dahp/postern`](https://www.npmjs.com/package/@dahp/postern) · [Protocol](docs/PROTOCOL.md) ·
+[Security](SECURITY.md)
+
 Send a **password**, **text** (user IDs, codes), a **link**, or a **file** (JSON or anything up to 256 KB)
-from your phone to Chrome on your laptop. On the laptop you can fill it into the focused field, open the
+from your phone to the browser on your computer (Chrome, Edge, Firefox, Safari), or to any website or
+app that adds the npm package. On the laptop you can fill it into the focused field, open the
 link, copy it, or save the file.
 
 The extension shows a QR code, the phone scans it, and the item travels end-to-end encrypted.
 Nothing to install on the phone, no accounts. Works without internet too (two-QR offline mode).
 
 ```
-LAPTOP (Chrome extension)                       PHONE (web page or home-screen app)
+LAPTOP (browser extension)                      PHONE (web page or home-screen app)
 1. Click into a field (optional), open Postern
 2. New one-time X25519 key pair
    QR: https://<server>/#v=1&id=<session>&k=<public key>
@@ -89,7 +94,7 @@ LAPTOP (Chrome extension)                       PHONE (web page or home-screen a
 - **Links are limited to http(s)** on both sides, so a `javascript:` or `file:` link can't be opened.
 - **File names are cleaned** of path parts and unsafe characters before saving.
 - **Relay rate limit:** 30 API requests a minute per IP.
-- **Settings accept only https servers** (plain http only for localhost).
+- **The extension's server is fixed** to postern.dahp.io in store builds; nothing can change it.
 - **Limits:** password 1,024 characters, text 10,000, link 4,096, file 256 KB.
 
 Trust note: the phone page's code comes from the server (same model as any web app). The service
@@ -161,10 +166,8 @@ Put that URL in the extension's **Settings**. Only development builds (`npm run 
 
 ## Release
 
-Production is `https://postern.dahp.io` (live since 30 October 2026): a Worker custom domain on the
-dahp.io Cloudflare zone. It adds one record for the `postern` subdomain only; the website's records
-are untouched. The account's `dahp.workers.dev` subdomain exists because Cloudflare requires one, but
-Postern's `workers.dev` address is turned off (`workers_dev: false`).
+Production is `https://postern.dahp.io`, a Cloudflare Worker on a custom domain (`relay/wrangler.jsonc`).
+Its `workers.dev` address is turned off.
 
 ```sh
 npm run deploy                                      # builds and deploys the relay and web pages
@@ -198,10 +201,16 @@ Self-hosting is for websites and apps, through the npm package's `server` option
 that wants an extension for its own relay builds one from this code with its own fixed server
 (`PT_SERVER=https://postern.example.com npm run build`) and publishes it under its own name.
 
+The self-hosted relay passes the same end-to-end tests as the Cloudflare relay. Settings: `PORT`,
+`RATE_LIMIT`, `TRUST_PROXY`, `PUBLIC_DIR` (see `selfhost/server.mjs`).
+
 Development builds (`npm run build`) also accept a server in Settings, for testing with a tunnel or
-a local relay. It
-passes the same end-to-end tests as the Cloudflare relay. Settings: `PORT`, `RATE_LIMIT`,
-`TRUST_PROXY`, `PUBLIC_DIR` (see `selfhost/server.mjs`).
+a local relay.
+
+## Contributing and security
+
+Bug reports and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Please report
+security problems privately, as described in [SECURITY.md](SECURITY.md), not in a public issue.
 
 ## License
 

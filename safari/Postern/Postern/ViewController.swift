@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  Postern
 //
-//  Created by Feroz Pathan on 10/31/26.
+//  Copyright © 2026 DAHP Tech LLC. Apache-2.0.
 //
 
 import Cocoa
