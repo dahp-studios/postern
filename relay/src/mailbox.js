@@ -14,6 +14,10 @@ export const SESSION_TTL_MS = 2 * 60 * 1000;
 export const WAIT_MS = 25 * 1000; // under the ~30 s idle limit of most proxies
 export const CANCELLED = 4001;
 export const EXPIRED = 4000;
+// Receivers only ever send "ping", every 20 s. Anything else, or a flood, closes the socket.
+export const MAX_SOCKET_MESSAGES = 5; // per SOCKET_WINDOW_MS
+const SOCKET_WINDOW_MS = 10_000;
+const POLICY_VIOLATION = 1008;
 
 const reply = (status, body) => ({ status, body });
 
@@ -51,11 +55,26 @@ export class Mailbox {
       this.socket = null; // cancelled meanwhile
       return { error: reply(410, { error: "session_closed" }) };
     }
+    let count = 0;
+    let windowStart = Date.now();
     return {
       message: (data) => {
-        if (data === "ping") socket.send("pong");
+        if (this.socket !== socket) return;
+        const now = Date.now();
+        if (now - windowStart > SOCKET_WINDOW_MS) [count, windowStart] = [0, now];
+        if (data !== "ping" || ++count > MAX_SOCKET_MESSAGES) {
+          // Not our client. Drop it; the session stays open for the real receiver.
+          this.socket = null;
+          try {
+            socket.close(POLICY_VIOLATION, "unexpected message");
+          } catch {
+            // already closed
+          }
+          return;
+        }
+        socket.send("pong");
         // The receiver pings as soon as it connects, so a waiting message goes out then.
-        if (this.pending && this.socket === socket) this.#hand(this.pending);
+        if (this.pending) this.#hand(this.pending);
       },
       close: (code) => {
         if (this.socket !== socket) return;
@@ -178,4 +197,5 @@ export const API_HEADERS = {
   "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Max-Age": "86400",
+  "X-Content-Type-Options": "nosniff",
 };

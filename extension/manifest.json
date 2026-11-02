@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Postern",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A private gate from your phone to your browser. Send passwords, text, links and files, end-to-end encrypted.",
   "minimum_chrome_version": "120",
   "icons": {

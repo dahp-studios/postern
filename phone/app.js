@@ -7,7 +7,7 @@ const panes = [...document.querySelectorAll("[data-pane]")];
 
 const ERRORS = {
   laptop_not_waiting: "The laptop isn't connected.",
-  session_closed: "This QR code has already been used or has expired. Scan a new one.",
+  session_closed: "This QR code has already been used or has expired. If the laptop shows something you didn't send, discard it there. Scan a new QR code.",
   too_large: "That's too large to send.",
   rate_limited: "Too many tries. Wait a minute and try again.",
 };

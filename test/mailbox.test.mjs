@@ -2,7 +2,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CANCELLED, Mailbox, parseDelivery, route } from "../relay/src/mailbox.js";
+import { CANCELLED, MAX_SOCKET_MESSAGES, Mailbox, parseDelivery, route } from "../relay/src/mailbox.js";
 
 const MESSAGE = '{"v":1,"enc":"e","ct":"c"}';
 
@@ -117,4 +117,30 @@ test("routes and body checks", () => {
   assert.equal(parseDelivery("nope").error.status, 400);
   assert.equal(parseDelivery('{"v":1}').error.status, 400);
   assert.equal(parseDelivery('{"v":1,"enc":"e","ct":"c","extra":"dropped"}').message, MESSAGE);
+});
+
+test("a receiver that sends anything but ping, or floods pings, is dropped; the session stays open", async () => {
+  const box = new Mailbox();
+  const rogue = fakeSocket();
+  (await box.attachSocket(rogue)).message("x".repeat(5000));
+  assert.equal(rogue.closed, 1008);
+  assert.deepEqual(rogue.sent, []);
+
+  const flooder = fakeSocket();
+  const handlers = await box.attachSocket(flooder);
+  for (let i = 0; i < 50; i++) handlers.message("ping");
+  assert.equal(flooder.closed, 1008);
+  assert.equal(flooder.sent.length, MAX_SOCKET_MESSAGES);
+
+  const real = fakeSocket();
+  (await box.attachSocket(real)).message("ping");
+  assert.equal(box.deliver(MESSAGE).status, 200);
+  assert.deepEqual(real.sent, ["pong", MESSAGE]);
+});
+
+test("binary WebSocket data is refused", async () => {
+  const box = new Mailbox();
+  const socket = fakeSocket();
+  (await box.attachSocket(socket)).message(new ArrayBuffer(8));
+  assert.equal(socket.closed, 1008);
 });

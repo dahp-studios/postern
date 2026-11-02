@@ -37,6 +37,14 @@ function countdown(expiresAt, render) {
   timer = setInterval(tick, 1000);
 }
 
+function hostOf(url) {
+  try {
+    return new URL(url).host || null;
+  } catch {
+    return null;
+  }
+}
+
 function formatSize(bytes) {
   return bytes < 1024 ? `${bytes} bytes` : `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0)} KB`;
 }
@@ -115,6 +123,12 @@ function renderReceived(item, code) {
   } else {
     title = "Received something Postern can't use";
   }
+
+  // Say where a fill goes, so a password never lands on a site the user didn't expect.
+  const fillsHere = actions.some(([label]) => label.startsWith("Fill"));
+  const host = fillsHere ? hostOf(tab?.url) : null;
+  $("target").textContent = host ? `Fill puts it into the selected field on ${host}.` : "";
+  $("target").hidden = !host;
 
   $("received-title").textContent = title;
   $("preview").textContent = preview ?? "";

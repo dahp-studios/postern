@@ -9,7 +9,35 @@
 // Anything else is served from ./public (the phone page). Protocol: docs/PROTOCOL.md.
 
 import { DurableObject } from "cloudflare:workers";
-import { API_HEADERS, Mailbox, SESSION_TTL_MS, parseDelivery, route } from "./mailbox.js";
+import { API_HEADERS, MAX_BODY_BYTES, Mailbox, SESSION_TTL_MS, parseDelivery, route } from "./mailbox.js";
+
+const TOO_LARGE = { status: 413, body: { error: "too_large" } };
+
+/** The request body as text, or null once it passes MAX_BODY_BYTES (the rest is never read). */
+async function readCapped(request) {
+  if (Number(request.headers.get("Content-Length") ?? 0) > MAX_BODY_BYTES) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > MAX_BODY_BYTES) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
 
 const respond = ({ status, body }) => new Response(body == null ? null : typeof body === "string" ? body : JSON.stringify(body), { status, headers: API_HEADERS });
 
@@ -40,7 +68,9 @@ export default {
       case "cancel":
         return respond(await stub.cancel());
       case "deliver": {
-        const parsed = parseDelivery(await request.text());
+        const text = await readCapped(request);
+        if (text === null) return respond(TOO_LARGE);
+        const parsed = parseDelivery(text);
         return respond(parsed.error ?? (await stub.deliver(parsed.message)));
       }
     }

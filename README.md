@@ -92,8 +92,12 @@ LAPTOP (browser extension)                      PHONE (web page or home-screen a
 - **Passwords never touch the clipboard.** They go straight into the focused field. Copy is offered
   only for text and links.
 - **Links are limited to http(s)** on both sides, so a `javascript:` or `file:` link can't be opened.
-- **File names are cleaned** of path parts and unsafe characters before saving.
-- **Relay rate limit:** 30 API requests a minute per IP.
+- **File names are cleaned** of path parts, unsafe characters and invisible direction-changing
+  characters (so `.exe` can't pose as `.pdf`) before saving.
+- **Relay rate limit:** 30 API requests a minute per IP. A receiver's WebSocket accepts only `ping`,
+  a few a minute; anything else, or a flood, closes it. Uploads over the size limit are refused unread.
+- **Fill stays on the page's own origin:** never into an embedded third-party frame, and the popup
+  names the site it will fill.
 - **The extension's server is fixed** to postern.dahp.io in store builds; nothing can change it.
 - **Limits:** password 1,024 characters, text 10,000, link 4,096, file 256 KB.
 

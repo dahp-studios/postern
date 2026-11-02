@@ -25,6 +25,7 @@ export { drawQr } from "../../../shared/qr.js";
 export const DEFAULT_SERVER = "https://postern.dahp.io";
 const PING_MS = 20_000;
 const RETRY_MS = 2_000;
+const MAX_RETRY_MS = 15_000;
 const CANCELLED = 4001; // tells the relay to end the session rather than wait for a reconnect
 
 /** Errors from a session, with a `code` you can branch on. */
@@ -149,6 +150,12 @@ export async function receive({ server = DEFAULT_SERVER, types, transport = "aut
 
   // --- Long-polling transport (devices without WebSocket) ----------------------------------
   async function poll() {
+    let retryMs = RETRY_MS;
+    // Wait before asking again, longer each time, so a busy or refusing relay isn't flooded.
+    const backOff = async () => {
+      await new Promise((r) => setTimeout(r, retryMs));
+      retryMs = Math.min(retryMs * 2, MAX_RETRY_MS);
+    };
     while (!finished && Date.now() < expiresAt) {
       pollAbort = new AbortController();
       try {
@@ -159,11 +166,17 @@ export async function receive({ server = DEFAULT_SERVER, types, transport = "aut
         const res = await request;
         if (res.status === 200) return accept(await res.json());
         if (res.status === 410) return fail(new PosternError("expired", "The QR code expired."));
-        setStatus("waiting"); // 204: nothing yet, ask again
+        if (res.status === 204) {
+          setStatus("waiting"); // nothing yet, ask again
+          retryMs = RETRY_MS;
+          continue;
+        }
+        // 429 (too many requests), 409, 5xx…: the relay is refusing for now.
+        await backOff();
       } catch {
         if (finished) return;
         setStatus("offline"); // the phone can still send by showing a QR code (acceptOffline)
-        await new Promise((r) => setTimeout(r, RETRY_MS));
+        await backOff();
       }
     }
   }
