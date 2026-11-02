@@ -150,6 +150,7 @@ video {
   image-rendering: pixelated;
 }
 .footer { margin: 1.5rem 0 0; font-size: 0.8rem; text-align: center; }
+.trust { margin: 0 0 0.6rem; font-size: 0.85rem; text-align: center; color: var(--muted); }
 .agree { margin: 0.75rem 0 0; font-size: 0.8rem; text-align: center; color: var(--muted); }
 .agree a { color: inherit; }
 .footer a { color: var(--muted); }

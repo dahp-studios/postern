@@ -11,7 +11,7 @@ no accounts.
   Electron, Node 20+. Plain HTTP long polling where WebSocket isn't available.
 - **Open protocol:** native apps (Android, Google TV, iOS, Apple TV) can use the REST API directly.
 
-Live demo: <https://postern.dahp.io/developers>
+Live demo: <https://postern.dahp.io/developers> · Browser extension: [Chrome Web Store](https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm)
 
 ## Install
 

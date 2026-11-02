@@ -3,8 +3,16 @@
 
 const FILLABLE_TYPES = ["password", "text", "email", "tel", "url", "search", ""];
 
+// Both run only in the page's own origin: the top frame and same-origin iframes, never an embedded
+// third-party frame (Chrome's activeTab already blocks those; this makes every browser behave alike).
+
 /** Runs in each frame. True if this frame's focused element can take a password. */
 export function hasFillableFocus(types) {
+  try {
+    if (window.top.location.origin !== location.origin) return false;
+  } catch {
+    return false; // cross-origin frame
+  }
   const el = document.activeElement;
   if (!el || el.disabled || el.readOnly) return false;
   if (el instanceof HTMLTextAreaElement) return true;
@@ -13,6 +21,11 @@ export function hasFillableFocus(types) {
 
 /** Runs in each frame. Fills the focused field, firing the events frameworks like React listen for. */
 export function fillFocused(value, types) {
+  try {
+    if (window.top.location.origin !== location.origin) return false;
+  } catch {
+    return false; // cross-origin frame
+  }
   const el = document.activeElement;
   if (!el || el.disabled || el.readOnly) return false;
   const isTextArea = el instanceof HTMLTextAreaElement;

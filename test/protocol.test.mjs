@@ -124,6 +124,8 @@ test("unsafe file names are cleaned", () => {
   assert.equal(cleanFileName('a<b>:"c|?*.json'), "abc.json");
   assert.equal(cleanFileName(""), "file");
   assert.equal(cleanFileName("x".repeat(300)).length, 200);
+  assert.equal(cleanFileName("invoice\u202Efdp.exe"), "invoicefdp.exe"); // no right-to-left override
+  assert.equal(cleanFileName("a\u200b\u2066b\ufeff.txt"), "ab.txt");
 });
 
 test("isSafeUrl", () => {

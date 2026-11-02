@@ -76,10 +76,17 @@ export function isSafeUrl(text) {
   }
 }
 
-/** Strip path parts and control characters so a file name is safe to save. */
+/**
+ * Strip path parts, control characters and invisible formatting characters so a file name is safe
+ * to save and shows its real extension (U+202E could make "x\u202Efdp.exe" display as "xexe.pdf").
+ */
 export function cleanFileName(name) {
   const base = String(name ?? "").split(/[\\/]/).pop();
-  const cleaned = base.replace(/[\u0000-\u001f\u007f<>:"|?*]/g, "").replace(/^\.+/, "").trim();
+  const cleaned = base
+    .replace(/[\u0000-\u001f\u007f<>:"|?*]/g, "")
+    .replace(/[\u00ad\u061c\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g, "")
+    .replace(/^\.+/, "")
+    .trim();
   return cleaned.slice(0, LIMITS.fileName) || "file";
 }
 

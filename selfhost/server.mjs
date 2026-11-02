@@ -6,7 +6,8 @@
 // Settings (environment variables):
 //   PORT=8790          HOST=0.0.0.0
 //   RATE_LIMIT=30      API requests per minute per IP; 0 turns it off
-//   TRUST_PROXY=1      take the client IP from X-Forwarded-For (only behind your own proxy)
+//   TRUST_PROXY=1      take the client IP from the last X-Forwarded-For entry, the one your own
+//                      proxy adds (only behind exactly one proxy you run)
 //   PUBLIC_DIR=…       the built phone page (default ../relay/public; `npm run build` makes it)
 //
 // Put it behind HTTPS (a reverse proxy such as Caddy or nginx): phones only run the encryption on
@@ -50,8 +51,9 @@ setInterval(() => {
 
 function clientIp(req) {
   if (TRUST_PROXY) {
+    // Clients can send their own X-Forwarded-For; only the entry your proxy appended is trustworthy.
     const forwarded = req.headers["x-forwarded-for"];
-    if (forwarded) return String(forwarded).split(",")[0].trim();
+    if (forwarded) return String(forwarded).split(",").pop().trim();
   }
   return req.socket.remoteAddress ?? "unknown";
 }
@@ -128,16 +130,23 @@ function send(res, { status, body }) {
   res.end(body == null ? undefined : typeof body === "string" ? body : JSON.stringify(body));
 }
 
-/** The request body, or null if it's over the size limit (the rest is read and dropped). */
+/** The request body, or null if it's over the size limit (reading stops there). */
 function readBody(req) {
+  if (Number(req.headers["content-length"] ?? 0) > MAX_BODY_BYTES) return Promise.resolve(null);
   return new Promise((resolve) => {
     const chunks = [];
     let size = 0;
-    req.on("data", (chunk) => {
+    const onData = (chunk) => {
       size += chunk.length;
-      if (size <= MAX_BODY_BYTES) chunks.push(chunk);
-    });
-    req.on("end", () => resolve(size > MAX_BODY_BYTES ? null : Buffer.concat(chunks).toString("utf8")));
+      if (size > MAX_BODY_BYTES) {
+        req.off("data", onData);
+        req.pause();
+        return resolve(null);
+      }
+      chunks.push(chunk);
+    };
+    req.on("data", onData);
+    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     req.on("error", () => resolve(""));
   });
 }
@@ -167,7 +176,10 @@ const server = http.createServer(async (req, res) => {
   if (target.action === "cancel") return send(res, session(target.id).cancel());
   if (target.action === "deliver") {
     const text = await readBody(req);
-    if (text === null) return send(res, { status: 413, body: { error: "too_large" } });
+    if (text === null) {
+      res.setHeader("Connection", "close"); // don't read the rest of an oversized upload
+      return send(res, { status: 413, body: { error: "too_large" } });
+    }
     const parsed = parseDelivery(text);
     if (parsed.error) return send(res, parsed.error);
     const box = sessions.get(target.id);
@@ -177,7 +189,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 // WebSocket receivers
-const wss = new WebSocketServer({ noServer: true });
+// Receivers only send "ping"; anything bigger is refused before it's buffered.
+const wss = new WebSocketServer({ noServer: true, maxPayload: 1024 });
 server.on("upgrade", (req, socket, head) => {
   const { pathname } = new URL(req.url, "http://relay");
   const target = route("GET", pathname, true);
