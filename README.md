@@ -2,7 +2,7 @@
 
 A private gate from your phone to your browser.
 
-[Website](https://postern.dahp.io) · [For developers](https://postern.dahp.io/developers) ·
+[Website](https://postern.dahp.io) · [Chrome Web Store](https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm) · [For developers](https://postern.dahp.io/developers) ·
 [npm: `@dahp/postern`](https://www.npmjs.com/package/@dahp/postern) · [Protocol](docs/PROTOCOL.md) ·
 [Security](SECURITY.md)
 
@@ -63,7 +63,7 @@ LAPTOP (browser extension)                      PHONE (web page or home-screen a
 
 | Receiving side | How |
 |---|---|
-| Chrome, Edge, Brave, Opera | The extension (`extension/dist`) |
+| Chrome, Edge, Brave, Opera | [The extension on the Chrome Web Store](https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm) (`extension/dist`) |
 | Firefox 140+ | The extension (`extension/dist-firefox`) |
 | Safari on macOS 13+ | The extension in a Mac app (`safari/`) |
 | Any browser, no install | `postern.dahp.io/receive`: shows the item with Copy, Open and Save |
