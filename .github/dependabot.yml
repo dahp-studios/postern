@@ -1,0 +1,29 @@
+# Weekly dependency updates, one grouped pull request per package set.
+# Security updates are separate and arrive as soon as an advisory is published.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      all:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /packages/postern
+    schedule:
+      interval: weekly
+    groups:
+      all:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /selfhost
+    schedule:
+      interval: weekly
+    groups:
+      all:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /selfhost
+    schedule:
+      interval: weekly
