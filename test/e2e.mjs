@@ -2,10 +2,10 @@
 //   PT_SERVER=https://... npm run test:e2e   to test a deployed relay.
 
 import assert from "node:assert/strict";
-import { createReceiver, sealItem, buildLink, parseLinkFragment, encodeOfflinePayload } from "../shared/protocol.js";
+import { createReceiver, sealItem, buildLink, parseLinkFragment, encodeOfflinePayload, withoutTrailingSlash } from "../shared/protocol.js";
 import { receive } from "../packages/postern/src/index.js";
 
-const server = (process.env.PT_SERVER || "http://localhost:8787").replace(/\/+$/, "");
+const server = withoutTrailingSlash(process.env.PT_SERVER || "http://localhost:8787");
 const wsBase = server.replace(/^http/, "ws");
 
 function waitForMessage(ws) {

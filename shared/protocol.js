@@ -227,11 +227,18 @@ export async function sealItem({ sessionId, publicKey, item, testEphemeralSeed }
  * Link encoded in the QR. Everything after "#" stays on the device; browsers never send it to the server.
  * `types` optionally limits what the phone offers (for example ["password", "text"] for a password field).
  */
+/** A URL without trailing slashes. A loop rather than /\/+$/, which backtracks on long runs of slashes. */
+export function withoutTrailingSlash(url) {
+  let end = url.length;
+  while (end > 0 && url[end - 1] === "/") end--;
+  return url.slice(0, end);
+}
+
 export function buildLink(baseUrl, { sessionId, publicKey }, { types } = {}) {
   const params = new URLSearchParams({ v: String(PROTOCOL_VERSION), id: sessionId, k: publicKey });
   const offered = (types ?? []).filter((t) => ITEM_TYPES.includes(t));
   if (offered.length && offered.length < ITEM_TYPES.length) params.set("t", offered.join(","));
-  return `${baseUrl.replace(/\/+$/, "")}/#${params}`;
+  return `${withoutTrailingSlash(baseUrl)}/#${params}`;
 }
 
 /** Returns { sessionId, publicKey, types } (types: what the receiver accepts), or null. */
