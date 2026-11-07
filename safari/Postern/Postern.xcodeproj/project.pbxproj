@@ -55,6 +55,7 @@
 
 /* Begin PBXFileReference section */
 		570795AF3095E8140011C16B /* Postern.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Postern.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		570795E0C0DE0001C0DE0001 /* Postern.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Postern.xcconfig; path = Config/Postern.xcconfig; sourceTree = "<group>"; };
 		570795B23095E8140011C16B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		570795B63095E8140011C16B /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
 		570795B83095E8140011C16B /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
@@ -100,6 +101,7 @@
 		570795A63095E8140011C16B = {
 			isa = PBXGroup;
 			children = (
+				570795E0C0DE0001C0DE0001 /* Postern.xcconfig */,
 				570795B13095E8140011C16B /* Postern */,
 				570795CE3095E8170011C16B /* Postern Extension */,
 				570795B03095E8140011C16B /* Products */,
@@ -331,6 +333,7 @@
 /* Begin XCBuildConfiguration section */
 		570795D23095E8170011C16B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 570795E0C0DE0001C0DE0001 /* Postern.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -394,6 +397,7 @@
 		};
 		570795D33095E8170011C16B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 570795E0C0DE0001C0DE0001 /* Postern.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -451,7 +455,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = XTKXXS72FR;
 				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -471,7 +474,7 @@
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern.Extension;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(POSTERN_BUNDLE_ID).Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -486,7 +489,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = XTKXXS72FR;
 				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -506,7 +508,7 @@
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern.Extension;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(POSTERN_BUNDLE_ID).Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -523,7 +525,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = XTKXXS72FR;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
@@ -547,7 +548,7 @@
 					"-framework",
 					WebKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(POSTERN_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -565,7 +566,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = XTKXXS72FR;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_APP_SANDBOX = YES;
@@ -589,7 +589,7 @@
 					"-framework",
 					WebKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.dahp.postern;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(POSTERN_BUNDLE_ID)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

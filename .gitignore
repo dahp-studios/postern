@@ -22,3 +22,6 @@ safari/**/*.xcuserstate
 *.mobileprovision
 *.pem
 *.key
+
+# Per-machine Xcode signing settings (see safari/README.md)
+safari/**/Local.xcconfig

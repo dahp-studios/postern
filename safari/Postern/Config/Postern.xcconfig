@@ -1,0 +1,9 @@
+// Build settings shared by both targets (the app and the Safari extension).
+//
+// Building your own copy? Change the bundle ID below to one you own, then copy
+// Local.xcconfig.example to Local.xcconfig and put your Apple Developer Team ID in it.
+// Local.xcconfig is ignored by git, so signing details never end up in the repository.
+
+POSTERN_BUNDLE_ID = io.dahp.postern
+
+#include? "Local.xcconfig"
