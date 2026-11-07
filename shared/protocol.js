@@ -54,7 +54,8 @@ export function toBase64Url(bytes) {
 }
 
 export function fromBase64Url(str) {
-  if (typeof str !== "string" || !/^[A-Za-z0-9_-]*$/.test(str)) {
+  // A length of 4n+1 can't come from base64; atob would throw its own DOMException for it.
+  if (typeof str !== "string" || !/^[A-Za-z0-9_-]*$/.test(str) || str.length % 4 === 1) {
     throw new Error("Invalid base64url");
   }
   const b64 = str.replace(/-/g, "+").replace(/_/g, "/");

@@ -1,6 +1,6 @@
 {
   "name": "@dahp/postern",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Let people send a password, text, link or file from their phone to your page or app by scanning a QR code. End-to-end encrypted (HPKE, RFC 9180).",
   "keywords": [
     "qr",
