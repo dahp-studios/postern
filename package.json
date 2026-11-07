@@ -18,7 +18,7 @@
     "sdk:pack": "node scripts/build.mjs && cd packages/postern && npm pack --pack-destination ../../dist"
   },
   "dependencies": {
-    "@hpke/core": "1.9.0",
+    "@hpke/core": "1.10.0",
     "@hpke/dhkem-x25519": "1.8.0",
     "jsqr": "1.4.0",
     "qrcode-generator": "2.0.4"
