@@ -3,14 +3,14 @@
 #   docker run -p 8790:8790 postern-relay
 # Put it behind HTTPS (phones only run the encryption on https pages).
 
-FROM node:22-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 COPY . .
 RUN node scripts/build.mjs
 
-FROM node:22-alpine
+FROM node:25-alpine
 ENV NODE_ENV=production PORT=8790 HOST=0.0.0.0
 WORKDIR /app
 COPY selfhost/package.json selfhost/package-lock.json selfhost/
