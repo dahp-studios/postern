@@ -24,6 +24,6 @@ updates:
       all:
         patterns: ["*"]
   - package-ecosystem: docker
-    directory: /selfhost
+    directory: /
     schedule:
       interval: weekly
