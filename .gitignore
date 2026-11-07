@@ -11,3 +11,14 @@ extension/dist-firefox/
 extension/dist-safari/
 safari/**/xcuserdata/
 safari/**/*.xcuserstate
+
+# Never commit credentials: Wrangler/dotenv secrets, Apple signing material, private keys
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+*.p12
+*.p8
+*.mobileprovision
+*.pem
+*.key
