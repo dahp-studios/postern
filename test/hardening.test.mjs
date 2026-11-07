@@ -69,6 +69,12 @@ test("self-host: an oversized upload is refused from its Content-Length, without
   assert.equal(status, 413);
 });
 
+test("npm package: the server option must be an http(s) URL", async () => {
+  for (const server of ["javascript:alert(1)", "ws://relay", "relay.example", "", 42]) {
+    await assert.rejects(receive({ server, transport: "poll" }), TypeError);
+  }
+});
+
 test("npm package: a relay answering 429 is asked again with growing pauses, not flooded", async () => {
   let hits = 0;
   const relay = http.createServer((req, res) => {

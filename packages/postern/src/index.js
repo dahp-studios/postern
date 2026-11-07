@@ -49,6 +49,7 @@ export class PosternError extends Error {
  * @param {AbortSignal} [options.signal]  aborting cancels the session
  */
 export async function receive({ server = DEFAULT_SERVER, types, transport = "auto", onStatus, signal } = {}) {
+  if (typeof server !== "string" || !/^https?:\/\/[^/?#]+/.test(server)) throw new TypeError("server must be an http(s) URL");
   server = server.replace(/\/+$/, "");
   const receiver = await createReceiver();
   const { sessionId } = receiver;

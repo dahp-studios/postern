@@ -13,16 +13,19 @@ const RECONNECT_MS = 2_000;
 let socket = null;
 let pingTimer = null;
 
-chrome.runtime.onInstalled.addListener(async () => {
-  await chrome.contextMenus.removeAll(); // an update keeps the old entry
-  chrome.contextMenus.create({
-    id: MENU_ID,
-    title: "Postern: receive from phone",
-    contexts: ["editable", "page"], // on a field to fill it, anywhere for links and files
+// Firefox for Android has no context menus; the toolbar button still works there.
+if (chrome.contextMenus) {
+  chrome.runtime.onInstalled.addListener(async () => {
+    await chrome.contextMenus.removeAll(); // an update keeps the old entry
+    chrome.contextMenus.create({
+      id: MENU_ID,
+      title: "Postern: receive from phone",
+      contexts: ["editable", "page"], // on a field to fill it, anywhere for links and files
+    });
   });
-});
+}
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+chrome.contextMenus?.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== MENU_ID || !tab) return;
   try {
     await chrome.action.openPopup({ windowId: tab.windowId });

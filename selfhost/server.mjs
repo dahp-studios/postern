@@ -15,7 +15,7 @@
 
 import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebSocketServer } from "ws";
 import { API_HEADERS, MAX_BODY_BYTES, Mailbox, SESSION_TTL_MS, parseDelivery, route } from "../relay/src/mailbox.js";
@@ -24,7 +24,8 @@ const PORT = Number(process.env.PORT ?? 8790);
 const HOST = process.env.HOST ?? "0.0.0.0";
 const RATE_LIMIT = Number(process.env.RATE_LIMIT ?? 30);
 const TRUST_PROXY = process.env.TRUST_PROXY === "1";
-const PUBLIC_DIR = normalize(process.env.PUBLIC_DIR ?? fileURLToPath(new URL("../relay/public/", import.meta.url)));
+// Trailing separator, so "…/public-other/x" can never pass the "inside PUBLIC_DIR" check below.
+const PUBLIC_DIR = normalize(process.env.PUBLIC_DIR ?? fileURLToPath(new URL("../relay/public/", import.meta.url))).replace(/[\\/]*$/, sep);
 
 // --- Sessions ----------------------------------------------------------------------------------
 

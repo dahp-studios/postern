@@ -125,6 +125,7 @@ test("unsafe file names are cleaned", () => {
   assert.equal(cleanFileName(""), "file");
   assert.equal(cleanFileName("x".repeat(300)).length, 200);
   assert.equal(cleanFileName("invoice\u202Efdp.exe"), "invoicefdp.exe"); // no right-to-left override
+  for (const bad of ["x", "xxxxx", "1", "a.b", "a b"]) assert.throws(() => fromBase64Url(bad), { message: "Invalid base64url" });
   assert.equal(cleanFileName("a\u200b\u2066b\ufeff.txt"), "ab.txt");
 });
 
