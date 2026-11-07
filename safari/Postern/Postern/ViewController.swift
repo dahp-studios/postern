@@ -9,7 +9,8 @@ import Cocoa
 import SafariServices
 import WebKit
 
-let extensionBundleIdentifier = "io.dahp.postern.Extension"
+// The extension lives inside this app, so its bundle ID is ours plus ".Extension" (see Config/Postern.xcconfig).
+let extensionBundleIdentifier = (Bundle.main.bundleIdentifier ?? "io.dahp.postern") + ".Extension"
 
 class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHandler {
 

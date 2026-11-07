@@ -1,10 +1,23 @@
 # Postern for Safari (macOS)
 
 `safari/Postern/Postern.xcodeproj` wraps the extension in a small Mac app, as Safari requires.
-Generated with Apple's `safari-web-extension-converter`, then set to bundle ID `io.dahp.postern`
-(extension `io.dahp.postern.Extension`), team DAHP Tech LLC (`XTKXXS72FR`), macOS 13 or later.
+Generated with Apple's `safari-web-extension-converter`, macOS 13 or later.
 
 The project doesn't copy the extension: it uses `extension/dist-safari/` directly, so build that first.
+
+## Signing and bundle ID
+
+Nothing account-specific is in the project. `safari/Postern/Config/Postern.xcconfig` sets the bundle ID
+(`io.dahp.postern`; the extension is `io.dahp.postern.Extension`) and includes an optional
+`Local.xcconfig` next to it, which git ignores. Before building:
+
+```sh
+cp safari/Postern/Config/Local.xcconfig.example safari/Postern/Config/Local.xcconfig
+```
+
+and put your Apple Developer Team ID in it. Pick the team there, not in Xcode's Signing pane, or
+Xcode writes it into the project file. Building your own copy for distribution? Also set
+`POSTERN_BUNDLE_ID` to an ID you own, since `io.dahp.postern` is registered to DAHP Tech LLC.
 
 ## Try it on this Mac
 
@@ -21,7 +34,7 @@ open safari/Postern/Postern.xcodeproj
 
 ## Publish to the Mac App Store
 
-The account owner does these steps in the browser and in Xcode.
+The account owner does these steps in the browser and in Xcode, with the team ID in `Local.xcconfig`.
 
 1. developer.apple.com → Identifiers → **+** → App IDs: `io.dahp.postern` and
    `io.dahp.postern.Extension`.

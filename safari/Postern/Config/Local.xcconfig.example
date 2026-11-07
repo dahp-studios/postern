@@ -1,0 +1,8 @@
+// Copy this file to Local.xcconfig (same folder) and fill in your own values.
+// Local.xcconfig is ignored by git.
+
+// Your Apple Developer Team ID (Xcode → Settings → Accounts, or developer.apple.com → Membership).
+DEVELOPMENT_TEAM =
+
+// Optional: build under your own bundle ID instead of editing Postern.xcconfig.
+// POSTERN_BUNDLE_ID = com.example.postern
