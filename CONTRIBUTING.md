@@ -24,7 +24,7 @@ and server, change:
 
 | What | Where |
 |---|---|
-| Relay address in the extension | `PT_SERVER` when running `npm run build:release` (see `extension/src/settings.js`) |
+| Relay address in the extension | `PT_SERVER=https://your-relay npm run build`, or edit `build:release` in `package.json` (see `extension/src/settings.js`) |
 | Firefox add-on ID (`postern@dahp.io`) | `browser_specific_settings.gecko.id` in `scripts/build.mjs` |
 | Safari bundle ID and signing team | `safari/Postern/Config/Postern.xcconfig` and `Local.xcconfig` (see `safari/README.md`) |
 | Cloudflare route (`postern.dahp.io`) | `routes` in `relay/wrangler.jsonc` |
