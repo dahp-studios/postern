@@ -12,6 +12,7 @@
 // Restyle it with CSS custom properties on the page: --postern-accent, --postern-radius, --postern-font.
 
 import { DEFAULT_SERVER, drawQr, fileAsText, fill, isSafeUrl, receive } from "./index.js";
+import { withoutTrailingSlash } from "../../../shared/protocol.js";
 
 export { fill };
 
@@ -136,7 +137,7 @@ export function open({ server = DEFAULT_SERVER, types, title, scanner } = {}) {
   applyStyle(root, STYLE);
   const $ = (sel) => root.querySelector(sel);
   if (title) $("#title").textContent = title;
-  $(".terms").href = `${server.replace(/\/+$/, "")}/terms`; // the relay's Terms of Use
+  $(".terms").href = `${withoutTrailingSlash(server)}/terms`; // the relay's Terms of Use
   const previousFocus = document.activeElement;
   document.body.append(host);
 

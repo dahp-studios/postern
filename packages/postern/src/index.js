@@ -17,6 +17,7 @@ import {
   decodeOfflinePayload,
   fileAsText,
   isSafeUrl,
+  withoutTrailingSlash,
 } from "../../../shared/protocol.js";
 
 export { ITEM_TYPES, LIMITS, fileAsText, isSafeUrl };
@@ -50,7 +51,7 @@ export class PosternError extends Error {
  */
 export async function receive({ server = DEFAULT_SERVER, types, transport = "auto", onStatus, signal } = {}) {
   if (typeof server !== "string" || !/^https?:\/\/[^/?#]+/.test(server)) throw new TypeError("server must be an http(s) URL");
-  server = server.replace(/\/+$/, "");
+  server = withoutTrailingSlash(server);
   const receiver = await createReceiver();
   const { sessionId } = receiver;
   const expiresAt = Date.now() + SESSION_TTL_MS;

@@ -13,6 +13,7 @@ import {
   encodeOfflinePayload,
   decodeOfflinePayload,
   MAX_OFFLINE_PAYLOAD,
+  withoutTrailingSlash,
 } from "../shared/protocol.js";
 
 async function roundTrip(item) {
@@ -187,4 +188,14 @@ test("offline QR payload round trip and limits", async () => {
   for (const bad of ["", "https://example.com", "PT1.short.a.b", `PT2.${rx.sessionId}.${message.enc}.${message.ct}`, `PT1.${rx.sessionId}.${message.enc}.<script>`]) {
     assert.equal(decodeOfflinePayload(bad), null, bad);
   }
+});
+
+test("withoutTrailingSlash: strips any number of slashes, quickly even for long runs", () => {
+  assert.equal(withoutTrailingSlash("https://relay.example"), "https://relay.example");
+  assert.equal(withoutTrailingSlash("https://relay.example///"), "https://relay.example");
+  assert.equal(withoutTrailingSlash("///"), "");
+  assert.equal(withoutTrailingSlash(""), "");
+  const started = performance.now();
+  assert.equal(withoutTrailingSlash("https://relay.example/" + "/".repeat(200000) + "x"), "https://relay.example/" + "/".repeat(200000) + "x");
+  assert.ok(performance.now() - started < 200, "linear time");
 });

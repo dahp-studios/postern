@@ -1,6 +1,8 @@
 // Development builds only (`npm run build`): like settings.js, but Settings may point Postern at a
 // local relay or a tunnel for testing. Store builds use settings.js and never include this file.
 
+import { withoutTrailingSlash } from "../../shared/protocol.js";
+
 export const DEFAULT_SERVER = __DEFAULT_SERVER__;
 
 /** Phones need HTTPS for the encryption to work, so plain http is only for local testing. */
@@ -17,7 +19,7 @@ function isAllowedServer(value) {
 /** { server, source }: source is "settings" when a test server is set. */
 export async function getServerInfo() {
   const { server } = await chrome.storage.local.get("server");
-  if (server && isAllowedServer(server)) return { server: server.replace(/\/+$/, ""), source: "settings" };
+  if (server && isAllowedServer(server)) return { server: withoutTrailingSlash(server), source: "settings" };
   return { server: DEFAULT_SERVER, source: "default" };
 }
 
@@ -43,7 +45,7 @@ export function setupServerField(onChange) {
       return;
     }
     input.setCustomValidity("");
-    if (value) await chrome.storage.local.set({ server: value.replace(/\/+$/, "") });
+    if (value) await chrome.storage.local.set({ server: withoutTrailingSlash(value) });
     else await chrome.storage.local.remove("server");
     document.getElementById("saved").hidden = false;
     onChange();
