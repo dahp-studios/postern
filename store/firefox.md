@@ -42,7 +42,7 @@ Privacy Policy: https://postern.dahp.io/privacy
 **Homepage / support site:** https://postern.dahp.io/
 **Privacy policy:** https://postern.dahp.io/privacy (paste its text if AMO asks for the policy itself)
 **Terms of Use:** https://postern.dahp.io/terms (AMO has an optional EULA field; leave it empty and add both links to the end of the description)
-**Compatibility:** Firefox for desktop only for now. Untick Firefox for Android: Android has no context menus API, so the add-on needs a small change before it can be offered there.
+**Compatibility:** Firefox for desktop only for now. Untick Firefox for Android: the add-on runs there without the right-click entry, but it hasn't been tested on Android yet.
 **License:** Apache License 2.0
 **Screenshots:** `store/screenshots/1-scan.png`, `2-confirm.png`, `3-filled.png`
 
@@ -68,4 +68,4 @@ Source code: the package is bundled with esbuild from the attached source (no mi
 3. `npm run build:release`
 4. The add-on is in `extension/dist-firefox/` and is identical to the uploaded package.
 
-Protocol specification: docs/PROTOCOL.md in the source. Tests: `npm test`.
+Protocol specification: docs/PROTOCOL.md in the source. Tests: `npm test`. Public repository: https://github.com/dahp-studios/postern
