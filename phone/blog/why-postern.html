@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Why we built Postern: a private gate from your phone to your browser</title>
+  <meta name="description" content="Typing a long password from your phone into a laptop is slow and error-prone. Postern sends it across by QR code, end-to-end encrypted, with nothing to install on the phone.">
+  <link rel="canonical" href="https://postern.dahp.io/blog/why-postern">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Why we built Postern">
+  <meta property="og:description" content="A private gate from your phone to your browser: scan a QR code, check a 4-digit code, and the password is in the field. End-to-end encrypted, open source.">
+  <meta property="og:url" content="https://postern.dahp.io/blog/why-postern">
+  <meta property="og:image" content="https://postern.dahp.io/blog/confirm.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="article:published_time" content="2026-11-11">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="wide doc article">
+    <p class="brand"><a href="/">Postern</a> · Blog</p>
+    <h1>Why we built Postern: a private gate from your phone to your browser</h1>
+    <p class="hint small byline">DAHP Tech · 11 November 2026 · 5 minute read</p>
+
+    <p class="lede">Your password is on your phone. The login form is on your laptop. Somewhere between the two, you end up squinting at 24 random characters and typing them one at a time. We built Postern to make that one small moment private and quick.</p>
+
+    <h2>The problem we kept running into</h2>
+    <p>Password managers are great when they're installed everywhere. But often they aren't:</p>
+    <ul>
+      <li>A work laptop where you can't install your password manager.</li>
+      <li>A new computer, before anything is set up.</li>
+      <li>A shared or borrowed machine, where you don't want to sign in to your whole vault.</li>
+      <li>A Wi-Fi password, an API key or a long recovery code that lives in a note on your phone.</li>
+    </ul>
+    <p>The usual workarounds all have a cost. Typing by hand is slow, and a strong password is exactly the kind you mistype. Emailing or messaging it to yourself leaves a copy on someone else's server, often forever. Clipboard sync only works within one company's devices, and anything on the clipboard can be read by other apps.</p>
+    <p>We wanted something that works with any phone and any browser, leaves nothing behind, and doesn't ask anyone to trust us with what they send.</p>
+
+    <h2>How it works</h2>
+    <figure>
+      <img src="scan.png" width="1280" height="800" alt="The Postern extension showing a QR code on the laptop, next to the phone page where the password is typed.">
+      <figcaption>Open Postern on the laptop and scan its QR code with your phone.</figcaption>
+    </figure>
+    <ol>
+      <li><b>Open Postern on your laptop.</b> Click the toolbar icon, right-click the field, or press Alt+Shift+P. It shows a QR code.</li>
+      <li><b>Scan it with your phone's camera.</b> It opens a web page. There's no app to install and no account to create.</li>
+      <li><b>Type or paste on the phone and press Send.</b> It's encrypted on the phone before it goes anywhere.</li>
+      <li><b>Check the code.</b> Both screens show the same 4-digit number. If they match, click Fill and the password goes straight into the field.</li>
+    </ol>
+    <figure>
+      <img src="confirm.png" width="1280" height="800" loading="lazy" alt="The phone and the laptop both showing the same 4-digit code, 0622, with a Fill password button on the laptop.">
+      <figcaption>The same 4-digit code on both screens shows it came from your phone.</figcaption>
+    </figure>
+    <p>Postern sends more than passwords: text like user IDs and codes, links that you can open, fill or copy, and small files up to 256 KB, such as a JSON config. And a password is never put on the clipboard. It goes into the field you chose and nowhere else.</p>
+
+    <h2>What makes it private</h2>
+    <p>The design starts from one rule: our server should be unable to read anything, even if it wanted to.</p>
+    <ul>
+      <li><b>A one-time key that never reaches us.</b> When you open Postern, your browser makes a fresh key pair. The public key travels in the QR code, after the <code>#</code> in the link. Browsers never send that part of a link to a server, so the key goes straight from your screen to your phone's camera.</li>
+      <li><b>Standard, well-reviewed encryption.</b> The phone encrypts with HPKE (RFC 9180), using X25519, HKDF-SHA256 and AES-256-GCM. Our implementation is tested against the official RFC 9180 test vectors.</li>
+      <li><b>A relay that only passes things on.</b> The server holds the encrypted message in memory until your browser collects it, then deletes it. Nothing is written to disk. Unclaimed messages are gone after 2 minutes.</li>
+      <li><b>A check against a photographed QR code.</b> If someone takes a picture of your screen, they could try to send something of their own first. The 4-digit code is derived from the encryption of that one message, so a message from anyone else shows a different code, except by a 1 in 10,000 chance. Only fill when the codes match.</li>
+      <li><b>No accounts, no analytics, no tracking.</b> There's nothing to sign up for, and nothing about you to collect.</li>
+    </ul>
+
+    <h2>What Postern doesn't protect against</h2>
+    <p>No tool protects against everything, and we'd rather say so up front:</p>
+    <ul>
+      <li><b>A compromised device.</b> If your phone or laptop has malware on it, that malware can see what you type, with or without Postern.</li>
+      <li><b>Someone watching your screen</b> while you type on the phone.</li>
+      <li><b>Fake websites.</b> Postern fills the field you chose. Unlike a password manager, it doesn't check that the site is the real one. Look at the address bar before you fill a password, as you would when typing it.</li>
+      <li><b>Skipping the code check.</b> The 4-digit code only helps if you compare it.</li>
+    </ul>
+
+    <figure>
+      <img src="filled.png" width="1280" height="800" loading="lazy" alt="A login form with the password field filled in by Postern.">
+      <figcaption>Filled straight into the field, never copied to the clipboard.</figcaption>
+    </figure>
+
+    <h2>Open source, from the protocol up</h2>
+    <p>Postern is open source under the Apache 2.0 license. You can read every line of the extension, the phone page and the relay, and the protocol is documented in full with test vectors, so anyone can build a compatible client.</p>
+    <p>If you'd rather not depend on our server at all, the relay runs on your own machine with Docker. And if you build websites or apps, the <code>@dahp/postern</code> npm package adds a "From phone" button to any field, so your own users can send passwords and files from their phone the same way.</p>
+    <p class="callout">Found a security problem? Please tell us privately at info@dahp.io rather than in a public issue. Our <a href="https://github.com/dahp-studios/postern/blob/main/SECURITY.md">security policy</a> explains how we handle reports.</p>
+
+    <h2>Try it</h2>
+    <p>Postern is available for Chrome, Edge and other Chromium browsers. Versions for Firefox and Safari are on the way. In the meantime, the web receiver works in any browser, with nothing to install.</p>
+    <div class="cta">
+      <a class="primary" href="https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm">Add to Chrome</a>
+      <a href="/receive">Use the web receiver</a>
+      <a href="/developers">For developers</a>
+      <a href="https://github.com/dahp-studios/postern">Source code</a>
+    </div>
+    <p>We'd love to hear how you use it, and what would make it better. Write to info@dahp.io or open an issue on GitHub.</p>
+
+    <p class="footer"><a href="/">Send</a> · <a href="/receive">Receive</a> · <a href="/developers">Developers</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="https://github.com/dahp-studios/postern">Source</a> · DAHP Tech LLC</p>
+  </main>
+</body>
+</html>

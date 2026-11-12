@@ -99,6 +99,9 @@ writeFileSync(
     .replace("__FILES__", JSON.stringify(cacheList)),
 );
 
+// The blog: copied after the service worker list is made, so phones don't download it for offline use.
+cpSync(join(root, "phone/blog"), join(phoneOut, "blog"), { recursive: true });
+
 // The script-tag builds, for anyone who wants them from this server rather than a CDN.
 mkdirSync(join(phoneOut, "sdk"), { recursive: true });
 for (const f of ["postern.global.js", "postern-scanner.global.js"]) cpSync(join(sdkOut, f), join(phoneOut, "sdk", f));
