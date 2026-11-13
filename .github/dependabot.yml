@@ -1,11 +1,15 @@
 # Weekly dependency updates, one grouped pull request per package set.
 # Security updates are separate and arrive as soon as an advisory is published.
+# Version updates wait 7 days after a release, so a hijacked package version is usually caught
+# and pulled before Dependabot offers it. The wait doesn't apply to security updates.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns: ["*"]
@@ -13,6 +17,8 @@ updates:
     directory: /packages/postern
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns: ["*"]
@@ -20,6 +26,8 @@ updates:
     directory: /selfhost
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns: ["*"]
@@ -27,6 +35,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     ignore:
       # Stay on long-term-support Node; odd-numbered majors are short-lived.
       - dependency-name: node
