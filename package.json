@@ -6,7 +6,7 @@
   "description": "Postern: a private gate from your phone to your browser. End-to-end encrypted transfer via a QR code.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "dev": "node scripts/build.mjs && cd relay && wrangler dev --ip 0.0.0.0 --port 8787 --var RATE_LIMIT:off",
+    "dev": "node scripts/build.mjs && cd relay && wrangler dev --ip 0.0.0.0 --port 8787 --var RATE_LIMIT:off --var HTTPS_ONLY:off",
     "test": "node --test test/*.test.mjs",
     "test:e2e": "node test/e2e.mjs",
     "playground": "node scripts/playground.mjs",

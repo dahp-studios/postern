@@ -44,6 +44,12 @@ const respond = ({ status, body }) => new Response(body == null ? null : typeof 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // Plain HTTP goes to HTTPS (301). `npm run dev` turns this off so phones on the local
+    // network can reach a development relay over http.
+    if (url.protocol === "http:" && env.HTTPS_ONLY !== "off") {
+      url.protocol = "https:";
+      return new Response(null, { status: 301, headers: { Location: url.toString() } });
+    }
     if (!url.pathname.startsWith("/api/")) return env.ASSETS.fetch(request);
 
     const isUpgrade = request.headers.get("Upgrade") === "websocket";

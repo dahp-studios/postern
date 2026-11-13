@@ -7,7 +7,8 @@
   "routes": [{ "pattern": "postern.dahp.io", "custom_domain": true }],
   "workers_dev": false,
   // The phone page, built from ../phone by `npm run build`.
-  "assets": { "directory": "./public", "binding": "ASSETS" },
+  // The Worker runs first for every request, so it can redirect plain HTTP to HTTPS.
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
   "durable_objects": {
     "bindings": [{ "name": "SESSIONS", "class_name": "Session" }]
   },
