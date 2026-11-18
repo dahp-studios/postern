@@ -16,7 +16,19 @@
 <body>
   <main>
     <p class="brand">Postern</p>
-    <h1>Send to your laptop</h1>
+    <h1 id="heading">Send to your laptop</h1>
+
+    <section id="computer" hidden>
+      <p class="hint">Postern sends a password, text, a link or a small file from your phone to this computer, end-to-end encrypted. Add the extension to this browser, open it, and scan its QR code with your phone.</p>
+      <div class="actions">
+        <a id="get-chrome" class="button primary" href="https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm" target="_blank" rel="noopener">Add to Chrome</a>
+        <a id="get-firefox" class="button" href="https://addons.mozilla.org/firefox/addon/postern/" target="_blank" rel="noopener">Add to Firefox</a>
+        <a class="button" href="receive">Use the web receiver</a>
+      </div>
+      <p class="hint small">Edge and other Chromium-based browsers can install the Chrome version. The web receiver works in any browser with nothing to install, but it copies instead of filling fields.</p>
+      <p class="hint small"><a href="blog/why-postern">How it works</a> · <a href="developers">For developers</a></p>
+      <button type="button" id="phone-anyway" class="link">On your phone? Scan a QR code</button>
+    </section>
 
     <section id="start" hidden>
       <p class="hint">Open Postern on your laptop and scan its QR code, either with your phone's camera app or here.</p>
@@ -99,7 +111,7 @@
       <p id="error" class="error" role="alert" hidden></p>
       <button type="button" id="error-qr" class="link" hidden>Show it as a QR code for the laptop's camera instead</button>
     </div>
-    <p class="footer"><a href="https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm" target="_blank" rel="noopener">Chrome extension</a> · <a href="privacy">Privacy</a> · <a href="terms">Terms</a> · <a href="blog/why-postern">Why Postern</a> · <a href="https://github.com/dahp-studios/postern" target="_blank" rel="noopener">Source</a></p>
+    <p class="footer"><a href="https://chromewebstore.google.com/detail/postern/lakdmlaodafbajkgleggmnelbdacglmm" target="_blank" rel="noopener">Chrome extension</a> · <a href="https://addons.mozilla.org/firefox/addon/postern/" target="_blank" rel="noopener">Firefox add-on</a> · <a href="privacy">Privacy</a> · <a href="terms">Terms</a> · <a href="blog/why-postern">Why Postern</a> · <a href="https://github.com/dahp-studios/postern" target="_blank" rel="noopener">Source</a></p>
   </main>
   <script type="module" src="app.js"></script>
 </body>

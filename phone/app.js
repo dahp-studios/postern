@@ -19,7 +19,8 @@ let session = null;
 let stopScanner = null;
 
 function showOnly(id) {
-  for (const s of ["start", "scanner", "send", "done", "offline"]) $(s).hidden = s !== id;
+  for (const s of ["computer", "start", "scanner", "send", "done", "offline"]) $(s).hidden = s !== id;
+  $("heading").textContent = id === "computer" ? "Get things from your phone onto this computer" : "Send to your laptop";
   $("error").hidden = true;
 }
 
@@ -198,8 +199,21 @@ function readLink() {
   // The key isn't secret, but keep it out of history and screenshots of the address bar.
   if (location.hash) history.replaceState(null, "", location.pathname);
   if (fromLink) useSession(fromLink);
-  else if (!session) showOnly("start");
+  else if (!session) showOnly(onComputer ? "computer" : "start");
 }
+
+// Opened on a computer without a QR link, the visitor most likely wants to receive here, not send.
+const onComputer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+if (navigator.userAgent.includes("Firefox/")) {
+  // Offer the store for this browser first.
+  $("get-firefox").classList.add("primary");
+  $("get-chrome").classList.remove("primary");
+  $("get-firefox").after($("get-chrome"));
+}
+$("phone-anyway").addEventListener("click", () => {
+  showOnly("start");
+  $("scan-start").click();
+});
 readLink();
 window.addEventListener("hashchange", readLink); // a new QR link opened in the same tab
 

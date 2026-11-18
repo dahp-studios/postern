@@ -207,3 +207,4 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 .article .cta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
 .article .cta a { display: inline-block; padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border); text-decoration: none; font-weight: 600; }
 .article .cta a.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+#computer .hint a { color: var(--accent); }
