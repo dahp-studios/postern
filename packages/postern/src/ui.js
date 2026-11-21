@@ -262,7 +262,12 @@ const ICON = `<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
  * Fires a cancelable "postern-receive" event ({ detail: { item, code } }); unless you call
  * preventDefault(), it fills the field named by `for`.
  */
-export class PosternButton extends HTMLElement {
+// Server-side rendering (Next.js, Nuxt, SvelteKit, Astro…) imports this module in Node, where
+// HTMLElement doesn't exist. A plain base class keeps the import from throwing there; the element
+// is only registered and used in a browser.
+const ElementBase = typeof HTMLElement === "undefined" ? class {} : HTMLElement;
+
+export class PosternButton extends ElementBase {
   connectedCallback() {
     if (this.shadowRoot) return;
     const root = this.attachShadow({ mode: "open" });

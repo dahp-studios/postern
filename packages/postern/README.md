@@ -101,6 +101,12 @@ await open({ scanner: startScanner });
 
 With your own scanner, pass the scanned text to `session.acceptOffline(text)`.
 
+## Server-side rendering
+
+Every entry point imports safely on the server (Next.js, Nuxt, SvelteKit, Astro and others).
+`@dahp/postern/ui` registers `<postern-button>` only in the browser, so call `open()`, `attach()`
+and `attachAll()` from browser code, for example in a click handler or after the page mounts.
+
 ## Content-Security-Policy
 
 If your site sets one, allow the relay: `connect-src https://postern.dahp.io wss://postern.dahp.io`.
